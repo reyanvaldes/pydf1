@@ -62,19 +62,11 @@ class Df1SerialPlc(BasePlc):
         self._clear_comm()
         self._connected = self.is_opened()
         self._loop = True
-        self._loop_thread = Thread(target=self._serial_loop, name="Serial thread")
+        self._loop_thread = Thread(target=self._serial_loop, name="Serial thread", daemon=True)
         self._loop_thread.start()
         if not self._wait_for_thread():
             raise ThreadError("Socket thread could not be started.")
 
-
-    def reconnect(self):
-        try:
-            self.close()
-            time.sleep(1)
-            self._plc.open()
-        except Exception as e:
-            print('Port Already Opened')
 
     def is_opened(self):
         return self._plc.is_open
@@ -98,7 +90,7 @@ class Df1SerialPlc(BasePlc):
         if self._plc:
             # print('Closing')
             self._loop = False
-            # self._loop_thread.join()
+            self._loop_thread.join()
             self._loop_thread = None
 
 
@@ -115,7 +107,7 @@ class Df1SerialPlc(BasePlc):
 
     def _serial_loop(self):
         ready_set = False
-        while self._loop or self._new_bytes_to_send:
+        while self._loop:
             if not ready_set:
                 self._ready.set()
                 self.ready_set = True

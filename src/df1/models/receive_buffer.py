@@ -68,10 +68,10 @@ class ReceiveBuffer:
 
     def _get_full_frame_position(self):
         indexes = [
-            self._get_stx_etx_frame_position(),
             self._get_short_reply_position(TxSymbol.ACK),
             self._get_short_reply_position(TxSymbol.ENQ),
-            self._get_short_reply_position(TxSymbol.NAK)
+            self._get_short_reply_position(TxSymbol.NAK),
+            self._get_stx_etx_frame_position()
         ]
         return next((i for i in indexes if i is not None), None)
 

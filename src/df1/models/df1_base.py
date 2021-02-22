@@ -390,10 +390,10 @@ class Df1BaseClient:
                 elif got_ack:
                     return reply
                 i += 1
-                # time.sleep(self._seq_sleep_time)
+                time.sleep(self._seq_sleep_time)
             if not retry_send:
                 # raise SendReceiveError()
-                self._plc.reconnect()
+                self._plc.clear_comm()
 
         raise SendReceiveError()
 
