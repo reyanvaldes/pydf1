@@ -19,7 +19,9 @@ import serial
 from enum import Enum
 import struct
 
-from df1.models import frame_factory, BasePlc, ReplyTimeout, BaseDataFrame
+from df1.models.base_plc import BasePlc
+from df1.models.reply_timeout import ReplyTimeout
+from df1.models.base_data_frame import BaseDataFrame
 from df1.models.exceptions import SendReceiveError
 from df1.models.receive_buffer import ReceiveBuffer
 from df1.models.tx_symbol import TxSymbol
