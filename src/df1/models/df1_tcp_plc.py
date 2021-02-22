@@ -57,6 +57,14 @@ class Df1TCPPlc(BasePlc):
             self._socket_thread.join()
             self._socket_thread = None
 
+    def reconnect(self):
+        self.close()
+        address.port = self._address
+        self.connect(address, port, self._timeout)
+
+    def clear_comm(self):
+        self._clear_comm()
+
     def send_bytes(self, buffer):
         with self._send_queue_lock:
             if len(self.send_queue) >= SEND_QUEUE_SIZE:

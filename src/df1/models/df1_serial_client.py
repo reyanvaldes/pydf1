@@ -36,7 +36,7 @@ from df1.models.df1_base import Df1BaseClient, TIMER, COUNTER, BIT
 from df1.models.df1_serial_plc import Df1SerialPlc
 
 
-SEND_SEQ_SLEEP_TIME = 0.00001  # magic with this sleep time to get faster processing in the Send Command sequence
+SEND_SEQ_SLEEP_TIME = 0.001  # magic with this sleep time to get faster processing in the Send Command sequence
 TIMEOUT_READ_MESSAGE = 3  # seconds
 
 # Df1SerialClient allows read or write using PCCC commands

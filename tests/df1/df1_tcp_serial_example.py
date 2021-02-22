@@ -41,8 +41,8 @@ for i in range(10000000):
         print('Counter5:0',client.read_counter(start=0, category=COUNTER.PRE)) # Read Counter OK
         print('R6:0', client.read_register(start=0, total_int=4))  # Read Registers- CONTROL OK
         print('B3:0', client.read_binary(start=0))  # Read Binary bits words OK
-        out0 = client.read_output(start=0, bit=BIT.ALL, total_int=2)
-        print('O0:0/3', out0)  # Read Outputs OK and Bits inspect
+        out0 = client.read_output(start=0, bit=BIT.ALL, total_int=1)
+        print('O0:0', out0)  # Read Outputs OK and Bits inspect
         print('I1:0', client.read_input(start=0, bit=BIT.BIT1, total_int=2))  # Read Inputs
         # Testing
         # print('Float8:0',client.read_float(start=0, total_float=2))  # Read Float

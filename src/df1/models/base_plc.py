@@ -25,4 +25,13 @@ class BasePlc:
     def close(self): pass  # pragma: nocover
 
     @abc.abstractmethod
+    def reconnect(self): pass  # pragma: nocover
+
+
+    @abc.abstractmethod
+    def clear_comm(self): pass  # pragma: nocover
+
+    @abc.abstractmethod
     def send_bytes(self, buffer): pass  # pragma: nocover
+
+

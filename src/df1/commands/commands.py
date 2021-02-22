@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from base_command import BaseCommand
-from file_type import FileType
+from df1.commands.base_command import BaseCommand
+from df1.file_type import FileType
 
 class Command0FA2(BaseCommand):
     """

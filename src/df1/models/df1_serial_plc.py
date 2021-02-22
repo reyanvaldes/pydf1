@@ -18,7 +18,7 @@ from collections import deque
 from threading import Event, Thread
 
 from df1.models.base_plc import BasePlc
-from exceptions import SendQueueOverflowError, ThreadError
+from df1.models.exceptions import SendQueueOverflowError, ThreadError
 import serial
 
 BUFFER_SIZE = 4096
@@ -70,6 +70,8 @@ class Df1SerialPlc(BasePlc):
 
     def reconnect(self):
         try:
+            self.close()
+            time.sleep(1)
             self._plc.open()
         except Exception as e:
             print('Port Already Opened')
@@ -83,6 +85,9 @@ class Df1SerialPlc(BasePlc):
 
     def is_clearing_comm(self):
         return self._clearing_comm
+
+    def clear_comm(self):
+        self._clear_comm()
 
 
     def _wait_for_thread(self):  # pragma: nocover

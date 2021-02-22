@@ -19,17 +19,17 @@ import serial
 from enum import Enum
 import struct
 
-from models import frame_factory, BasePlc, ReplyTimeout, BaseDataFrame
-from models.exceptions import SendReceiveError
-from models.receive_buffer import ReceiveBuffer
-from models.tx_symbol import TxSymbol
-from replies import ReplyAck, ReplyNak, ReplyEnq
+from df1.models import frame_factory, BasePlc, ReplyTimeout, BaseDataFrame
+from df1.models.exceptions import SendReceiveError
+from df1.models.receive_buffer import ReceiveBuffer
+from df1.models.tx_symbol import TxSymbol
+from df1.replies import ReplyAck, ReplyNak, ReplyEnq
 
-from commands import Command0FA2, Command0FAA  # Reading/Writing Command
-from file_type import FileType
+from df1.commands.commands import Command0FA2, Command0FAA  # Reading/Writing Command
+from df1.file_type import FileType
 
 PLC_SUPPORTED = {'MicroLogix 1100', 'MicroLogix 1000', 'SLC 500', 'SLC 5/03', 'SLC 5/04', 'PLC-5'}
-SEND_SEQ_SLEEP_TIME = 0.01  # magic with this sleep time to get faster processing in the Send Command sequence
+SEND_SEQ_SLEEP_TIME = 0.001  # magic with this sleep time to get faster processing in the Send Command sequence
 TIMEOUT_READ_MESSAGE = 3  # seconds
 
 
@@ -390,7 +390,7 @@ class Df1BaseClient:
                 time.sleep(self._seq_sleep_time)
             if not retry_send:
                 # raise SendReceiveError()
-                self._plc._clear_comm()
+                self._plc.reconnect()
 
         raise SendReceiveError()
 
