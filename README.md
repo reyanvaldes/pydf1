@@ -9,14 +9,14 @@ Then, in the `src` folder:
 
 ```
 rm dist/*
-python2 setup.py bdist_wheel
+python3 setup.py bdist_wheel
 twine upload dist/*
 ```
 
-the package `df1` can then be installed using `pip install df1`
+the package `df1py3` can then be installed using `pip install df1py3`
 
 ### Known limitations
 Although the current code is working and quite stable too, the implementation is incomplete:
-- Only ethernet connection is supported but the code is modular and ready to accept a new PLC class that supports any connection type, like serial.
+- Ethernet and serial connection is supported but the code is modular and ready to accept a new PLC class that supports any other connection type.
 - Some commands are not implemented, but the architecture is ready for more.
-- Only for Python 2.7. Will not work on anything more recent.
+- Python 3.6 will work
