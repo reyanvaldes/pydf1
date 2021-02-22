@@ -19,7 +19,7 @@ from threading import Event, Thread
 from socket import SOL_SOCKET, SO_KEEPALIVE, IPPROTO_TCP, TCP_KEEPCNT
 
 from df1.models.base_plc import BasePlc
-from .exceptions import SendQueueOverflowError, ThreadError
+from df1.models.exceptions import SendQueueOverflowError, ThreadError
 
 RCV_BUFFER_SIZE = 1024
 RECEIVE_TIMEOUT = 0.000000001  # This number impact the reading speed, that is why we have it with 0 (0.0000001)

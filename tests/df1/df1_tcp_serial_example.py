@@ -6,18 +6,13 @@
 
 # Repositories
 # Original: https://github.com/metalsartigan/pydf1
-# Adapted:
+# Adapted: https://github.com/reyanvaldes/pydf1
 
 import time
 import sys
-sys.path.append('df1/')
-sys.path.append('df1/commands/')
-sys.path.append('df1/models/')
-sys.path.append('df1/models/exceptions')
-sys.path.append('df1/replies/')
 
-from df1_tcp_client import Df1TCPClient
-from df1_base import TIMER, COUNTER, BIT
+from df1.models.df1_base import TIMER, COUNTER, BIT
+from df1.models.df1_tcp_client import Df1TCPClient
 import struct
 
 client = Df1TCPClient(ip_address ='192.168.10.23', ip_port =44818, plc_type='MicroLogix 1000', src=0x0, dst=0x1,

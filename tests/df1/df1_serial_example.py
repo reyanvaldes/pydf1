@@ -9,15 +9,13 @@
 
 import time
 import serial
-import sys
-import df1
 
 from df1.models.df1_serial_client import Df1SerialClient
-
+from df1.models.df1_base import TIMER, COUNTER, BIT
 
 client = Df1SerialClient(plc_type='MicroLogix 1000', src=0x0, dst=0x1,
                          port='COM3',
-                         baudrate=38400, parity=serial.PARITY_NONE,
+                         baudrate=19200, parity=serial.PARITY_NONE,
                          stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS,
                          timeout=3)
 client.connect()
