@@ -50,8 +50,8 @@ class ReceiveBuffer:
 
     def _find_next_system_dle(self, start=0):
         indexes = [
-            self._find_dle_xxx(TxSymbol.STX, start),
             self._find_dle_xxx(TxSymbol.ACK, start),
+            self._find_dle_xxx(TxSymbol.STX, start),
             self._find_dle_xxx(TxSymbol.ENQ, start),
             self._find_dle_xxx(TxSymbol.NAK, start)
         ]
