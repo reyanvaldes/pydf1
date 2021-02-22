@@ -7,7 +7,7 @@
 
 # Repositories
 # Original: https://github.com/metalsartigan/pydf1
-# Adapted:
+# Adapted:  https://github.com/reyanvaldes/pydf1
 
 import select
 import socket
@@ -17,7 +17,7 @@ import time
 from collections import deque
 from threading import Event, Thread
 
-from base_plc import BasePlc
+from df1.models.base_plc import BasePlc
 from exceptions import SendQueueOverflowError, ThreadError
 import serial
 

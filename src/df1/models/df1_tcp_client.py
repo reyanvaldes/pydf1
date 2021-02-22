@@ -6,10 +6,10 @@
 
 # Repositories
 # Original: https://github.com/metalsartigan/pydf1
-# Adapted:
+# Adapted:  https://github.com/reyanvaldes/pydf1
 
-from df1_base import Df1BaseClient
-from models import Df1TCPPlc
+from df1.models.df1_base import Df1BaseClient
+from df1.models.df1_tcp_plc import Df1TCPPlc
 
 """
  Example of using:

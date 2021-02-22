@@ -7,7 +7,7 @@
 
 # Repositories
 # Original: https://github.com/metalsartigan/pydf1
-# Adapted:
+# Adapted:  https://github.com/reyanvaldes/pydf1
 
 import select
 import socket
@@ -18,7 +18,7 @@ from collections import deque
 from threading import Event, Thread
 from socket import SOL_SOCKET, SO_KEEPALIVE, IPPROTO_TCP, TCP_KEEPCNT
 
-from . import BasePlc
+from df1.models.base_plc import BasePlc
 from .exceptions import SendQueueOverflowError, ThreadError
 
 RCV_BUFFER_SIZE = 1024

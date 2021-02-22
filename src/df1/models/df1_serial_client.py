@@ -7,7 +7,7 @@
 
 # Repositories
 # Original: https://github.com/metalsartigan/pydf1
-# Adapted:
+# Adapted:  https://github.com/reyanvaldes/pydf1
 
 """
  Example of using:
@@ -32,8 +32,8 @@ client.close()
 """
 
 import serial
-from df1_base import Df1BaseClient, TIMER, COUNTER, BIT
-from df1_serial_plc import Df1SerialPlc
+from df1.models.df1_base import Df1BaseClient, TIMER, COUNTER, BIT
+from df1.models.df1_serial_plc import Df1SerialPlc
 
 
 SEND_SEQ_SLEEP_TIME = 0.0  # magic with this sleep time to get faster processing in the Send Command sequence
