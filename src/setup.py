@@ -5,14 +5,14 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
-    name='df1',
-    version='0.5',
+    name='df1Py3',
+    version='1.0',
     packages=setuptools.find_packages(),
-    url='https://github.com/metalsartigan/pydf1',
+    url='https://github.com/reyanvaldes/Df1',
     license='MIT License',
-    author='Jerther',
-    author_email='jtheriault@metalsartigan.com',
-    description='A basic DF1 implementation in Python',
+    author='Jerther,rvaldes',
+    author_email='jtheriault@metalsartigan.com, rvaldes@itgtec.com',
+    description='A basic DF1 implementation in Python 3',
     long_description=long_description,
     long_description_content_type="text/markdown",
 )

@@ -19,7 +19,7 @@ class BasePlc:
             method()
 
     @abc.abstractmethod
-    def connect(self, address, port): pass  # pragma: nocover
+    def connect(self): pass  # pragma: nocover
 
     @abc.abstractmethod
     def close(self): pass  # pragma: nocover
