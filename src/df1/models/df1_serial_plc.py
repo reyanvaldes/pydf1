@@ -104,7 +104,6 @@ class Df1SerialPlc(BasePlc):
                 self.send_queue.append(buffer)
                 self._new_bytes_to_send = True
 
-
     def _serial_loop(self):
         ready_set = False
         while self._loop:
@@ -113,17 +112,17 @@ class Df1SerialPlc(BasePlc):
                 self.ready_set = True
             if not self._connected:
                 # TODO complete this
-               self._plc.open()
+                self._plc.open()
             if self._connected:  # reevaluate after connection
-                self._send_loop()
+                if len(self.send_queue) > 0:
+                    self._send_loop()
                 self._receive_bytes()
-                # self._receive_bytes()
-        self._connected = False
 
-        # print('Exit Serial Loop')
-        # if self._plc:
-        #     self._close()
-        #     self._plc = None
+        self._connected = False
+        print('Exit Serial Loop')
+        if self._plc:
+            self._close()
+            self._plc = None
 
     def _send_loop(self):
         with self._send_queue_lock:

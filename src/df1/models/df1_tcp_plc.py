@@ -124,6 +124,7 @@ class Df1TCPPlc(BasePlc):
         plc_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         plc_socket.settimeout(self._timeout)
         plc_socket.setsockopt(IPPROTO_TCP, TCP_KEEPCNT, 3)  # drop connection after n fails
+        plc_socket.setsockopt(IPPROTO_TCP, socket.TCP_NODELAY, 1)  # No delay speed up the communication
         try:
             self._connect_socket(plc_socket, self._address)
             self._connected = True

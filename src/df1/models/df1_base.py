@@ -32,9 +32,9 @@ from df1.commands.commands import Command0FA2, Command0FAA  # Reading/Writing Co
 from df1.file_type import FileType
 
 PLC_SUPPORTED = {'MicroLogix 1100', 'MicroLogix 1000', 'SLC 500', 'SLC 5/03', 'SLC 5/04', 'PLC-5'}
-SEND_SEQ_SLEEP_TIME = 0.001  # magic with this sleep time to get faster processing in the Send Command sequence
+SEND_SEQ_SLEEP_TIME = 0.0001  # magic with this sleep time to get faster processing in the Send Command sequence
 TIMEOUT_READ_MESSAGE = 3  # seconds
-WAIT_RECONNECT = 5  # Wait few seconds for open after close
+WAIT_RECONNECT = 1  # Wait few seconds for open after close
 
 class TIMER(Enum):
     """ Timer attributes"""
@@ -123,9 +123,15 @@ class Df1BaseClient:
         pass
 
     def reconnect(self):
-        self.close()
-        time.sleep(WAIT_RECONNECT)
-        self.connect()
+        try:
+            self._clear_comm = True
+            self.close()
+            time.sleep(WAIT_RECONNECT)
+            self.connect()
+        except Exception as e:
+            print('[ERROR] Reconnect Runtime error', e)
+        finally:
+            self._clear_comm = False
 
     def close(self):
         self._plc.close()
