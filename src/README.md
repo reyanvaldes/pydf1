@@ -23,8 +23,7 @@ from df1.models.df1_base import TIMER, COUNTER, BIT
 from df1.models.df1_tcp_client import Df1TCPClient
 import struct
 
-client = Df1TCPClient(ip_address ='192.168.10.23', ip_port =44818, plc_type='MicroLogix 1100', src=0x0, dst=0x1,
-                         timeout=2)
+client = Df1TCPClient(ip_address ='192.168.10.23', ip_port =44818, plc_type='MicroLogix 1100', src=0x0, dst=0x1,timeout=2)
 client.connect()
 
 client.write_binary(start=0,data=[0b1100])
@@ -55,11 +54,8 @@ import serial
 from df1.models.df1_serial_client import Df1SerialClient
 from df1.models.df1_base import TIMER, COUNTER, BIT
 
-client = Df1SerialClient(plc_type='MicroLogix 1100', src=0x0, dst=0x1,
-                         port='COM3',
-                         baudrate=19200, parity=serial.PARITY_NONE,
-                         stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS,
-                         timeout=3)
+client = Df1SerialClient(plc_type='MicroLogix 1100', src=0x0, dst=0x1,port='COM3',baudrate=19200, parity=serial.PARITY_NONE, 
+		stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS,timeout=3)
 client.connect()
 
 client.write_binary(start=0,data=[0b1100])
