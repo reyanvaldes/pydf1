@@ -1,9 +1,9 @@
-# DF1 #
+# DF1
 
 A very basic Allen Bradley DF1 protocol implementation in Python.
 
-### How to use: example 1- Reading TCP using commands ##
-
+### How to use: example 1- Reading TCP using commands
+```python
 from df1.df1_client import Df1Client
 from df1.commands import Command0FA2
 from df1.file_type import FileType
@@ -13,10 +13,11 @@ with Df1Client(src=0x0, dst=0x1) as client:
     command = client.create_command(Command0FA2, table=43, start=245, bytes_to_read=10, file_type=FileType.INTEGER)
     reply = client.send_command(command)
     print(reply.get_data(FileType.INTEGER))
+```
 
+### How to use: example 2- using wrapper functions for writing/reading TCP
 
-### How to use: example 2- using wrapper functions for writing/reading TCP ##
-
+```python
 import time
 import sys
 from df1.models.df1_base import TIMER, COUNTER, BIT
@@ -45,9 +46,11 @@ print('Float8:0',client.read_float(start=0, total_float=2))  # Read Float (if PL
 client.close()
 
 print('end testing')
+```
 
-### How to use: example 3- using wrapper functions for writing/reading serial ##
+### How to use: example 3- using wrapper functions for writing/reading serial
 
+```python
 import time
 import serial
 
@@ -77,4 +80,4 @@ print('Float8:0',client.read_float(start=0, total_float=2))  # Read Float
 client.close()
 
 print('end testing')
-
+```
