@@ -34,7 +34,7 @@ from df1.file_type import FileType
 PLC_SUPPORTED = {'MicroLogix 1100', 'MicroLogix 1000', 'SLC 500', 'SLC 5/03', 'SLC 5/04', 'PLC-5'}
 SEND_SEQ_SLEEP_TIME = 0.001  # magic with this sleep time to get faster processing in the Send Command sequence
 TIMEOUT_READ_MESSAGE = 3  # seconds
-
+WAIT_RECONNECT = 5  # Wait few seconds for open after close
 
 class TIMER(Enum):
     """ Timer attributes"""
@@ -124,7 +124,7 @@ class Df1BaseClient:
 
     def reconnect(self):
         self.close()
-        time.sleep(1)
+        time.sleep(WAIT_RECONNECT)
         self.connect()
 
     def close(self):
@@ -352,7 +352,7 @@ class Df1BaseClient:
         command.init_with_params(src=self._src, dst=self._dst, tns=self._get_new_tns(), **kwargs)
         return command
 
-    def wait_until_com_clear(self):
+    def wait_while_com_clear(self):
         # While clear any communication wth PLC hold any send command
         # This is kind of interlock when connect don't send any command until comm is clear
         while self.is_clear_comm():
@@ -360,11 +360,11 @@ class Df1BaseClient:
 
     def send_command(self, command):
         # While clear any communication wth PLC hold any send command
-        self.wait_until_com_clear()
+        self.wait_while_com_clear()
 
         """Doc page 4-6 Transmitter"""
         # print('Sending Command')
-        for __ in range(5):  # 3
+        for __ in range(3):  # 3
             # print('retry')
             self.comm_history.append({'direction': 'out', 'command': command})
             self._plc.send_bytes(command.get_bytes())
@@ -391,6 +391,7 @@ class Df1BaseClient:
                     return reply
                 i += 1
                 time.sleep(self._seq_sleep_time)
+
             if not retry_send:
                 # raise SendReceiveError()
                 self._plc.clear_comm()

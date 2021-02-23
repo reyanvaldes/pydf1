@@ -22,8 +22,8 @@ from df1.models.base_plc import BasePlc
 from df1.models.exceptions import SendQueueOverflowError, ThreadError
 
 RCV_BUFFER_SIZE = 1024
-RECEIVE_TIMEOUT = 0.000000001  # This number impact the reading speed, that is why we have it with 0 (0.0000001)
-THREAD_START_TIMEOUT = 1
+RECEIVE_TIMEOUT = 0.0000000001  # This number impact the reading speed, that is why we have it with 0 (0.0000001)
+THREAD_START_TIME = 2
 SEND_QUEUE_SIZE = 100
 
 class Df1TCPPlc(BasePlc):
@@ -47,6 +47,7 @@ class Df1TCPPlc(BasePlc):
             self._loop = True
             self._socket_thread = Thread(target=self._socket_loop, name="Socket thread", daemon=True)
             self._socket_thread.start()
+            time.sleep(THREAD_START_TIME)
             if not self._socket_thread.is_alive():
                 raise ThreadError("Socket thread could not be started.")
         return True
@@ -77,7 +78,8 @@ class Df1TCPPlc(BasePlc):
         while self._loop:  # or self._new_bytes_to_send
             try:
                 if self._connected:  # reevaluate after connection
-                    self._send_loop()
+                    if len(self.send_queue) > 0:
+                        self._send_loop()
                     self._receive_bytes()
                 else:
                     self._create_connected_socket()
@@ -90,12 +92,11 @@ class Df1TCPPlc(BasePlc):
             self._on_disconnected()
 
     def _send_loop(self):
-        if len(self.send_queue)>0:
-            with self._send_queue_lock:
-                # while self.send_queue:
+        with self._send_queue_lock:
+            while self.send_queue:
                 buffer = self.send_queue.popleft()
                 self._socket_send(buffer)
-            self._new_bytes_to_send = False
+        self._new_bytes_to_send = False
 
     def _socket_send(self, buffer):  # pragma: nocover
         # print('send',buffer)
@@ -105,30 +106,21 @@ class Df1TCPPlc(BasePlc):
             print('[Error] Send runtime error',e)
 
     def _receive_bytes(self, call_back_receiver=True):
+        # in_sockets, out_sockets, error_socket = select.select([self._plc_socket], [], [], RECEIVE_TIMEOUT)
+        # if in_sockets:
         try:
-            in_sockets, out_sockets, error_socket = select.select([self._plc_socket], [], [], RECEIVE_TIMEOUT)
-            if in_sockets:
-                try:
-                    buffer = self._plc_socket.recv(RCV_BUFFER_SIZE)
-                except socket.error as e:  # TODO: python 3 ConnectionResetError
-                    if e.errno == errno.ECONNRESET:
-                        buffer = bytearray()
-                    else:  # pragma: nocover
-                        return []
-                if buffer and call_back_receiver:
-                    self._on_bytes_received(buffer)
-                else:
-                    self._close_socket(self._plc_socket)
-                    self._connected = False
-                    self._on_disconnected()
-        except Exception as e:
-            print('[Error] Receive socket error')
-            self._close_socket(self._plc_socket)
-            self._connected = False
-            self._on_disconnected()
+            buffer = self._plc_socket.recv(RCV_BUFFER_SIZE)
+            # print ('buffer', buffer)
+            if buffer and call_back_receiver:
+                # print('received', buffer)
+                self._on_bytes_received(buffer)
+
+        except socket.error as e:  # TODO: python 3 ConnectionResetError
+            pass
 
     def _create_connected_socket(self):
         print('[INFO] Create new Socket to', self._address)
+        self._connected = False
         plc_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         plc_socket.settimeout(self._timeout)
         plc_socket.setsockopt(IPPROTO_TCP, TCP_KEEPCNT, 3)  # drop connection after n fails
@@ -136,8 +128,10 @@ class Df1TCPPlc(BasePlc):
             self._connect_socket(plc_socket, self._address)
             self._connected = True
             self._plc_socket = plc_socket
+            self._plc_socket.setblocking(0)
+            print('[INFO] Socket Comm Connect', self._connected)
         except (socket.timeout, socket.error):  # TODO: python 3 add ConnectionError
-            print('[Error] Socket Comm Error')
+            print('[ERROR] Socket Comm Error')
             self._connected = False
             self._close_socket(plc_socket)
             self._sleep()
@@ -159,7 +153,7 @@ class Df1TCPPlc(BasePlc):
             print('[WARN] Waiting for clear any comm with PLC...')
             try:
                 buffer = bytearray()
-                time.sleep(1)
+                time.sleep(0.5)
                 in_sockets, out_sockets, error_socket = select.select([self._plc_socket], [], [], self._timeout)
                 if in_sockets:
                     buffer = self._plc_socket.recv(RCV_BUFFER_SIZE)

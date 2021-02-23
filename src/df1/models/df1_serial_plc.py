@@ -90,7 +90,7 @@ class Df1SerialPlc(BasePlc):
         if self._plc:
             # print('Closing')
             self._loop = False
-            self._loop_thread.join()
+            # self._loop_thread.join()
             self._loop_thread = None
 
 
@@ -159,10 +159,13 @@ class Df1SerialPlc(BasePlc):
         self._plc.flush()
         self._plc.reset_input_buffer()
         self._plc.reset_output_buffer()
-        while self._read_bytes(): # read all bytes coming from PLC in case of response from previous command
-            time.sleep(0.5)
-            pass
-        print('[WARN] Waiting for clear comm- done')
+        time.sleep(1)
+        if self.is_opened():
+            while self._read_bytes():  # read all bytes coming from PLC in case of response from previous command
+                time.sleep(1)
+            print('[WARN] Waiting for clear comm- done')
+        else:
+            print('[WARN] Abort clear comm- It is not connected to the PLC')
         self._clearing_comm = False
 
     def _write_bytes(self, data):

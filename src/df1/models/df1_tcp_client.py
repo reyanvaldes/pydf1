@@ -8,7 +8,7 @@
 # Original: https://github.com/metalsartigan/pydf1
 # Adapted:  https://github.com/reyanvaldes/pydf1
 
-from df1.models.df1_base import Df1BaseClient
+from df1.models.df1_base import Df1BaseClient, PLC_SUPPORTED
 from df1.models.df1_tcp_plc import Df1TCPPlc
 
 """
@@ -32,7 +32,7 @@ client.close()
 
 TIMEOUT_READ_MESSAGE = 0.5  # seconds
 # Magic number with this sleep time to get faster processing in the Send Command sequence
-SEND_SEQ_SLEEP_TIME = 0.000000001
+SEND_SEQ_SLEEP_TIME = 0.00000000001
 
 # IMPORTANT CONFIGURATION FOR TCP-SERIAL ADAPTER:
 # The Ethernet -Serial adapter has to be configured as following:

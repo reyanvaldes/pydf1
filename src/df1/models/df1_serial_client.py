@@ -32,7 +32,7 @@ client.close()
 """
 
 import serial
-from df1.models.df1_base import Df1BaseClient, TIMER, COUNTER, BIT
+from df1.models.df1_base import Df1BaseClient, TIMER, COUNTER, BIT, PLC_SUPPORTED
 from df1.models.df1_serial_plc import Df1SerialPlc
 
 
