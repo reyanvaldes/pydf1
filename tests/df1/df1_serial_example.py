@@ -21,12 +21,13 @@ client = Df1SerialClient(plc_type='MicroLogix 1000', src=0x0, dst=0x1,
 client.connect()
 
 output =0
-for i in range(10000):
+
+for i in range(100000000):
     print('Running',i+1)
     start_time = time.time()
 
-    # output += 1
-    # output = 0 if output>15 else output
+    output += 1
+    output = 0 if output>15 else output
 
     # Write operations
     # client.write_binary(start=0,data=[0b1100])
@@ -60,7 +61,7 @@ for i in range(10000):
 
 client.close()
 
-print('end testing')
+print('end testing, total reconnect', client.reconnect_total())
 
 
 

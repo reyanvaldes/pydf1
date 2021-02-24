@@ -1,4 +1,4 @@
-
+44
 # Example of how use class to read DF1 protocol (PCCC commands) from Allen Bradley PLC using serial/TCP adapter
 # Authors:
 #  - Jerther Thériault <jtheriault@metalsartigan.com>
@@ -15,7 +15,7 @@ from df1.models.df1_base import TIMER, COUNTER, BIT
 from df1.models.df1_tcp_client import Df1TCPClient
 import struct
 
-client = Df1TCPClient(ip_address ='192.168.10.23', ip_port =44818, plc_type='MicroLogix 1000', src=0x0, dst=0x1,
+client = Df1TCPClient(ip_address ='192.168.0.7', ip_port =44818, plc_type='MicroLogix 1000', src=0x0, dst=0x1,
                          timeout=2)
 client.connect()
 
@@ -54,13 +54,14 @@ for i in range(10000000):
     except Exception as e:
         print('[WARN] Runtime error has happened',e)
         client.reconnect()
+
     except KeyboardInterrupt:
         print('Control+C')
         break
 
 client.close()
 
-print('end testing')
+print('end testing, reconnect', client.reconnect_total())
 
 
 

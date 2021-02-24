@@ -119,7 +119,7 @@ class Df1SerialPlc(BasePlc):
                 self._receive_bytes()
 
         self._connected = False
-        print('Exit Serial Loop')
+        print('[WARN] Exit Serial Loop')
         if self._plc:
             self._close()
             self._plc = None

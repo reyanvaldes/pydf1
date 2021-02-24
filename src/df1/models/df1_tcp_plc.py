@@ -86,6 +86,7 @@ class Df1TCPPlc(BasePlc):
             except Exception as e:
                 print('[WARN] Error with socket')
         self._connected = False
+        print('[WARN] Exit Socket Loop')
         if self._plc_socket:
             self._close_socket(self._plc_socket)
             self._connected = False
@@ -105,13 +106,13 @@ class Df1TCPPlc(BasePlc):
         except Exception as e:
             print('[Error] Send runtime error',e)
 
-    def _receive_bytes(self, call_back_receiver=True):
+    def _receive_bytes(self):
         # in_sockets, out_sockets, error_socket = select.select([self._plc_socket], [], [], RECEIVE_TIMEOUT)
         # if in_sockets:
         try:
             buffer = self._plc_socket.recv(RCV_BUFFER_SIZE)
             # print ('buffer', buffer)
-            if buffer and call_back_receiver:
+            if buffer:
                 # print('received', buffer)
                 self._on_bytes_received(buffer)
 
@@ -149,21 +150,21 @@ class Df1TCPPlc(BasePlc):
     # clear any previous communication with the plc, waiting for all bytes are read
     # and plc doesn't send any more data
     def _clear_comm(self):
-       self._clearing_comm = True
-       while True:  # read all bytes coming from PLC in case of response from previous command
-            print('[WARN] Waiting for clear any comm with PLC...')
+        self._clearing_comm = True
+        print('[WARN] Waiting for clear any comm with PLC...')
+        while True:  # read all bytes coming from PLC in case of response from previous command
             try:
                 buffer = bytearray()
-                time.sleep(0.5)
-                in_sockets, out_sockets, error_socket = select.select([self._plc_socket], [], [], self._timeout)
-                if in_sockets:
-                    buffer = self._plc_socket.recv(RCV_BUFFER_SIZE)
-                print('[WARN] Received Buffer', buffer)
-                if len(buffer)==0 or buffer is None:
-                    self._clearing_comm = False
-                    print('[WARN] Waiting for clear comm- done')
-                    return
+                time.sleep(1)
+                buffer = self._plc_socket.recv(RCV_BUFFER_SIZE)
+                # print ('buffer', buffer)
+                if len(buffer) == 0 or buffer is None:
+                    break
+                else:
+                    print('[WARN] Received Buffer', buffer)
             except Exception as e:
-                self._clearing_comm = False
-                return # return when the buffer is empty and got timeout
+                break
+
+        self._clearing_comm = False
+        print('[WARN] Waiting for clear comm- done')
 

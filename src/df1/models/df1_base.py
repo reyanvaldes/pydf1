@@ -110,6 +110,7 @@ class Df1BaseClient:
         # check the plc type supported, otherwise give a warning message
         self._plc_supported = self._check_plc_type()
         self._clear_comm = False
+        self._reconnect_count = 0
 
     def __enter__(self):
         return self
@@ -124,6 +125,7 @@ class Df1BaseClient:
 
     def reconnect(self):
         try:
+            self._reconnect_count += 1
             self._clear_comm = True
             self.close()
             time.sleep(WAIT_RECONNECT)
@@ -132,6 +134,9 @@ class Df1BaseClient:
             print('[ERROR] Reconnect Runtime error', e)
         finally:
             self._clear_comm = False
+
+    def reconnect_total(self):
+        return self._reconnect_count
 
     def close(self):
         self._plc.close()
