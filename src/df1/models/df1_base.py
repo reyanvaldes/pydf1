@@ -85,7 +85,7 @@ class BIT(Enum):
 # Df1SerialClient allows read or write using PCCC commands
 # Behind the scene is using for reading: Cmd=0F/Fnc=A2, for writing: Cmd=0F/Fnc=AA
 # See manual 7-3- Communication Commands
-# PLC supported: Micrologix 1000/+, SLC 500, SLC 5/03, SLC 5/04, PLC-5
+# PLC supported: Micrologix 1X00 family, SLC 500, SLC 5/03, SLC 5/04, PLC-5
 # note: the parsing of data is done in class Reply4f (reply_4.py)
 
 class Df1BaseClient:
@@ -108,7 +108,6 @@ class Df1BaseClient:
         self._last_response = [TxSymbol.DLE.value, TxSymbol.NAK.value]
         self._receive_buffer = ReceiveBuffer()
         # check the plc type supported, otherwise give a warning message
-        self._plc_supported = self._check_plc_type()
         self._clear_comm = False
         self._reconnect_count = 0
 
@@ -140,14 +139,6 @@ class Df1BaseClient:
 
     def close(self):
         self._plc.close()
-
-    def _check_plc_type(self):
-        plc_supported = self._plc_type in PLC_SUPPORTED
-        if not plc_supported:
-            print(f'[WARN] The PLC {self._plc_type} is not supported.Only {PLC_SUPPORTED}')
-            self._plc = None
-            raise NotImplementedError("PLC is not Supported")
-        return plc_supported
 
     def is_clear_comm(self):
         return self._plc.is_clearing_comm()

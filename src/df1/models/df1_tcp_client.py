@@ -52,8 +52,10 @@ class Df1TCPClient (Df1BaseClient):
         self._plc.bytes_received.append(self._bytes_received)
 
     def connect(self):
-        if self._plc_supported:
-            return self._plc.connect(address =self._ip_address, port= self._ip_port, timeout = self._timeout)
+        print(f'[INFO] Connecting to {self.plc_type} ip {self._ip_address} port {self._ip_port}')
+        self._plc.connect(address=self._ip_address, port=self._ip_port, timeout=self._timeout)
+        if self._plc.is_connected():
+            print(f'[INFO] Connect Status: OK')
         else:
-            print(f'[ERROR] Cannot open, PLC is not supported, only {PLC_SUPPORTED}')
+            print(f'[INFO] Connect Status: Failed')
 

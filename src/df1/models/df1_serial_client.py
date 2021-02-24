@@ -62,11 +62,13 @@ class Df1SerialClient(Df1BaseClient):
 
 
     def connect(self):
-        if self._plc_supported:
-            return self._plc.open(port=self._port, baudrate=self._baudrate,
-                                  parity=self._parity, stopbits=self._stopbits, bytesize=self._bytesize,
-                                  timeout=self._timeout)
+        print(f'[INFO] Connecting to {self.plc_type} port {self._port} speed {self._baudrate}')
+        self._plc.open(port=self._port, baudrate=self._baudrate,
+                       parity=self._parity, stopbits=self._stopbits, bytesize=self._bytesize,
+                       timeout=self._timeout)
+        if self._plc.is_opened():
+            print(f'[INFO] Connect Status: OK')
         else:
-            print(f'[ERROR] Cannot open, PLC is not supported, only {PLC_SUPPORTED}')
+            print(f'[INFO] Connect Status: Failed')
 
 
