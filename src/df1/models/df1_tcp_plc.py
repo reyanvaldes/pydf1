@@ -50,7 +50,9 @@ class Df1TCPPlc(BasePlc):
             time.sleep(THREAD_START_TIME)
             if not self._socket_thread.is_alive():
                 raise ThreadError("Socket thread could not be started.")
-        return True
+
+    def is_connected(self):
+        return self._connected
 
     def close(self):
         if self._socket_thread:
