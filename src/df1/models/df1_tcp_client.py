@@ -32,7 +32,7 @@ client.close()
 
 TIMEOUT_READ_MESSAGE = 0.5  # seconds
 # Magic number with this sleep time to get faster processing in the Send Command sequence
-SEND_SEQ_SLEEP_TIME = 0.00000000001
+SEND_SEQ_SLEEP_TIME = 0.0
 
 # IMPORTANT CONFIGURATION FOR TCP-SERIAL ADAPTER:
 # The Ethernet -Serial adapter has to be configured as following:
