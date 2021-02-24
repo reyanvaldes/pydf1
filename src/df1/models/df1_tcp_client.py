@@ -52,7 +52,7 @@ class Df1TCPClient (Df1BaseClient):
         self._plc.bytes_received.append(self._bytes_received)
 
     def connect(self):
-        print(f'[INFO] Connecting to {self.plc_type} ip {self._ip_address} port {self._ip_port}')
+        print(f'[INFO] Connecting to {self._plc_type} ip {self._ip_address} port {self._ip_port}')
         self._plc.connect(address=self._ip_address, port=self._ip_port, timeout=self._timeout)
         if self._plc.is_connected():
             print(f'[INFO] Connect Status: OK')

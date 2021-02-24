@@ -62,7 +62,7 @@ class Df1SerialClient(Df1BaseClient):
 
 
     def connect(self):
-        print(f'[INFO] Connecting to {self.plc_type} port {self._port} speed {self._baudrate}')
+        print(f'[INFO] Connecting to {self._plc_type} port {self._port} speed {self._baudrate}')
         self._plc.open(port=self._port, baudrate=self._baudrate,
                        parity=self._parity, stopbits=self._stopbits, bytesize=self._bytesize,
                        timeout=self._timeout)
