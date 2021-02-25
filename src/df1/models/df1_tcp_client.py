@@ -31,7 +31,7 @@ client.close()
 
 
 
-TIMEOUT_READ_MESSAGE = 1  # seconds
+TIMEOUT_READ_MESSAGE = 3  # seconds
 # Magic number with this sleep time to get faster processing in the Send Command sequence
 SEND_SEQ_SLEEP_TIME = 0.0
 

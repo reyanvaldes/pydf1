@@ -33,8 +33,8 @@ from df1.file_type import FileType
 
 PLC_SUPPORTED = {'MicroLogix 1100', 'MicroLogix 1000', 'SLC 500', 'SLC 5/03', 'SLC 5/04', 'PLC-5'}
 SEND_SEQ_SLEEP_TIME = 0.0001  # magic with this sleep time to get faster processing in the Send Command sequence
-TIMEOUT_READ_MESSAGE = 3  # seconds
 WAIT_RECONNECT = 1  # Wait few seconds for open after close
+EXPECT_MSG_SLEEP_TIME = 0.02 # Sleep time when receiving messages
 
 class TIMER(Enum):
     """ Timer attributes"""
@@ -435,6 +435,7 @@ class Df1BaseClient:
                 endTime = time.time()
                 if endTime - startTime > self._timeout_read_msg:
                     break
+            time.sleep(EXPECT_MSG_SLEEP_TIME)
         return ReplyTimeout()
 
     def _send_ack(self):
