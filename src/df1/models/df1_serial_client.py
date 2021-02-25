@@ -11,10 +11,9 @@
 
 """
  Example of using:
-import time
-from df1_tcp_client import Df1TCPClient
-from df1_base import TIMER, COUNTER, BIT
-from df1_serial_client import Df1SerialClient, TIMER, COUNTER, BIT
+import serial
+from df1.models.df1_base import Df1BaseClient
+from df1.models.df1_serial_plc import Df1SerialPlc
 
 
 client = Df1SerialClient(plc_type='MicroLogix 1000', src=0x0, dst=0x1,
@@ -23,21 +22,22 @@ client = Df1SerialClient(plc_type='MicroLogix 1000', src=0x0, dst=0x1,
                          stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS,
                          timeout_sec=3)
 client.connect()
-try:
-    print('N7:3-5', client.read_integer(start=0, total_int=3))  # Read Integers
-except Exception as e:
-    print('[WARN] Runtime error has happened',e)
-    client.reconnect()
-client.close()
+for __ in range(3):
+    try:
+        print('N7:3-5', client.read_integer(start=0, total_int=3))  # Read Integers
+    except Exception as e:
+        print('[WARN] Runtime error has happened',e)
+        client.reconnect()
+    client.close()
 """
 
 import serial
-from df1.models.df1_base import Df1BaseClient, TIMER, COUNTER, BIT, PLC_SUPPORTED
+from df1.models.df1_base import Df1BaseClient
 from df1.models.df1_serial_plc import Df1SerialPlc
 
 
 SEND_SEQ_SLEEP_TIME = 0.000001  # magic with this sleep time to get faster processing in the Send Command sequence
-TIMEOUT_READ_MESSAGE = 3  # seconds
+TIMEOUT_READ_MESSAGE = 2  # seconds
 
 # Df1SerialClient allows read or write using PCCC commands
 # Behind the scene is using for reading: Cmd=0F/Fnc=A2, for writing: Cmd=0F/Fnc=AA

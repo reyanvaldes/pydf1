@@ -13,24 +13,25 @@ from df1.models.df1_tcp_plc import Df1TCPPlc
 
 """
  Example of using:
-import time
-from df1_tcp_client import Df1TCPClient
-from df1_base import TIMER, COUNTER, BIT
+from df1.models.df1_base import Df1BaseClient, PLC_SUPPORTED
+from df1.models.df1_tcp_plc import Df1TCPPlc
+
 client = Df1TCPClient(ip_address ='192.168.10.23', ip_port =44818, plc_type='MicroLogix 1000', src=0x0, dst=0x1,
                          timeout=2)
 client.connect()
-try:
-    print('N7:3-5', client.read_integer(start=0, total_int=3))  # Read Integers
-    print('N7:3-5', client.read_integer(start=0, total_int=3))  # Read Integers
-except Exception as e:
-    print('[WARN] Runtime error has happened',e)
-    client.reconnect()      
+for __ in range(3):
+    try:
+        print('N7:3-5', client.read_integer(start=0, total_int=3))  # Read Integers
+        print('N7:3-5', client.read_integer(start=0, total_int=3))  # Read Integers
+    except Exception as e:
+        print('[WARN] Runtime error has happened',e)
+        client.reconnect()      
 client.close()
 """
 
 
 
-TIMEOUT_READ_MESSAGE = 0.5  # seconds
+TIMEOUT_READ_MESSAGE = 1  # seconds
 # Magic number with this sleep time to get faster processing in the Send Command sequence
 SEND_SEQ_SLEEP_TIME = 0.0
 
