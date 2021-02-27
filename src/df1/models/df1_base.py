@@ -125,10 +125,12 @@ class Df1BaseClient:
     def reconnect(self):
         try:
             self._reconnect_count += 1
-            self._clear_comm = True
+            # clear any previous buffer left just in case to avoid interfere with other command
+            self._plc.clear_buffer()
             self.close()
             time.sleep(WAIT_RECONNECT)
             self.connect()
+
         except Exception as e:
             print('[ERROR] Reconnect Runtime error', e)
         finally:
@@ -413,9 +415,9 @@ class Df1BaseClient:
                 if self._seq_sleep_time>0:
                     time.sleep(self._seq_sleep_time)
 
-            # if not retry_send:
+            if not retry_send:
                 # raise SendReceiveError()
-            self.reconnect()  # try to recover from any communication problem
+                self.reconnect()  # try to recover from any communication problem
 
         raise SendReceiveError()
 

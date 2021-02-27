@@ -23,7 +23,7 @@ from df1.models.exceptions import SendQueueOverflowError, ThreadError
 
 RCV_BUFFER_SIZE = 1024
 RECEIVE_TIMEOUT = 0.0000000001  # This number impact the reading speed, that is why we have it with 0 (0.0000001)
-THREAD_START_TIME = 2
+THREAD_START_TIME = 1
 SEND_QUEUE_SIZE = 100
 
 class Df1TCPPlc(BasePlc):
