@@ -37,7 +37,7 @@ from df1.models.df1_serial_plc import Df1SerialPlc
 
 
 SEND_SEQ_SLEEP_TIME = 0.000001  # magic with this sleep time to get faster processing in the Send Command sequence
-TIMEOUT_READ_MESSAGE = 2  # seconds
+TIMEOUT_READ_MESSAGE = 1  # seconds
 
 # Df1SerialClient allows read or write using PCCC commands
 # Behind the scene is using for reading: Cmd=0F/Fnc=A2, for writing: Cmd=0F/Fnc=AA

@@ -372,19 +372,21 @@ class Df1BaseClient:
             pass
 
     def send_command(self, command):
-        # wait for any pending command to avoid conflict with other previous commands
-        # make sure only one command is processing at a time
-        self.wait_no_pending_command()
-
-        # While clear any communication wth PLC hold any send command
-        self.wait_while_com_clear()
-
         """Doc page 4-6 Transmitter"""
         # print('Sending Command')
         for __ in range(3):  # 3
             # print('retry')
+            # wait for any pending command to avoid conflict with other previous commands
+            # make sure only one command is processing at a time
+            self.wait_no_pending_command()
+
+            # While clear any communication wth PLC hold any send command
+            self.wait_while_com_clear()
+
             self.comm_history.append({'direction': 'out', 'command': command})
+
             self._plc.send_bytes(command.get_bytes())
+
             retry_send = False
             got_ack = False
             i = 0
@@ -404,6 +406,7 @@ class Df1BaseClient:
                         self._send_nak()
                     else:
                         self._send_enq()
+                    break  # exit retry loop
                 elif got_ack:
                     return reply
                 i += 1
