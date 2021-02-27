@@ -84,6 +84,10 @@ class Df1SerialPlc(BasePlc):
     def is_pending_command(self):
         return len(self.send_queue)>0
 
+    def clear_buffer(self):
+        self._plc.flush()
+        self._plc.reset_input_buffer()
+        self._plc.reset_output_buffer()
 
     def _wait_for_thread(self):  # pragma: nocover
         return self._ready.wait(THREAD_START_TIMEOUT)
@@ -156,9 +160,8 @@ class Df1SerialPlc(BasePlc):
     def _clear_comm(self): # reset any communication, to make sure is like new start
         print('[WARN] Waiting for clear any comm with PLC...')
         self._clearing_comm = True
-        self._plc.flush()
-        self._plc.reset_input_buffer()
-        self._plc.reset_output_buffer()
+        self.clear_buffer()
+
         time.sleep(1)
         if self.is_opened():
             while self._read_bytes():  # read all bytes coming from PLC in case of response from previous command

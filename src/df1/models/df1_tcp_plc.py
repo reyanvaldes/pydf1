@@ -78,6 +78,13 @@ class Df1TCPPlc(BasePlc):
     def is_clearing_comm(self):
         return self._clearing_comm
 
+    def clear_buffer(self):
+        try:
+            time.sleep(0.001)
+            while self._plc_socket.recv(RCV_BUFFER_SIZE): pass
+        except Exception as e:
+            pass
+
     def _socket_loop(self):
         self._create_connected_socket()
         self._clear_comm() # clear any previous communication

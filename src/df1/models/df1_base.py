@@ -362,6 +362,8 @@ class Df1BaseClient:
         # This is kind of interlock when connect don't send any command until comm is clear
         while self.is_clear_comm():
             pass  # just wait
+        # clear any previous buffer left just in case to avoid interfere with other command
+        self._plc.clear_buffer()
 
     def wait_no_pending_command(self):
         # Check there is no pending command to avoid conflict with other previous commands

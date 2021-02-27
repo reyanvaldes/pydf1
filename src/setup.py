@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='df1py3',
-    version='1.0a19',
+    version='1.0a20',
     packages=setuptools.find_packages(),
     url='https://github.com/reyanvaldes/Df1',
     license='MIT License',
