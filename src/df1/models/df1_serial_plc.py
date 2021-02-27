@@ -126,10 +126,9 @@ class Df1SerialPlc(BasePlc):
 
     def _send_loop(self):
         with self._send_queue_lock:
-            while self.send_queue:
-                buffer = self.send_queue.popleft()
-                self._serial_send(buffer)
-            self._new_bytes_to_send = False
+            buffer = self.send_queue.popleft()
+            self._serial_send(buffer)
+        self._new_bytes_to_send = False
 
     def _serial_send(self, buffer):  # pragma: nocover
         # print('send', buffer)

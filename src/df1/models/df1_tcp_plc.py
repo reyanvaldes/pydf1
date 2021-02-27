@@ -96,9 +96,8 @@ class Df1TCPPlc(BasePlc):
 
     def _send_loop(self):
         with self._send_queue_lock:
-            while self.send_queue:
-                buffer = self.send_queue.popleft()
-                self._socket_send(buffer)
+            buffer = self.send_queue.popleft()
+            self._socket_send(buffer)
         self._new_bytes_to_send = False
 
     def _socket_send(self, buffer):  # pragma: nocover

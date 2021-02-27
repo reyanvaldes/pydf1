@@ -378,7 +378,7 @@ class Df1BaseClient:
                 # print('reply',reply, type(reply))
                 if type(reply) is ReplyAck:
                     got_ack = True
-                    # self._send_ack()  # Added - Send Ack to PLC, this allow PLC knows we received the data
+                    self._send_ack()  # Added - Send Ack to PLC on time, this allow PLC knows we received the data
                     i = 0
                 elif type(reply) is ReplyNak:
                     command.tns = self._get_new_tns()
