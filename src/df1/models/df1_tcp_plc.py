@@ -63,6 +63,10 @@ class Df1TCPPlc(BasePlc):
     def clear_comm(self):
         self._clear_comm()
 
+    def is_pending_command(self):
+        return len(self.send_queue)>0
+
+
     def send_bytes(self, buffer):
         with self._send_queue_lock:
             if len(self.send_queue) >= SEND_QUEUE_SIZE:

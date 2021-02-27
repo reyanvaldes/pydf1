@@ -143,6 +143,9 @@ class Df1BaseClient:
     def is_clear_comm(self):
         return self._plc.is_clearing_comm()
 
+    def is_pending_command(self):
+        return self._plc.is_pending_command()
+
     # Write output bits as entire word, it doesn't write specific bit only but the entire word
     # Used for testing reading. Example of use: write_output (data=[0b0011])
     def write_output(self, table=0, start=0, data=[]):
@@ -360,7 +363,17 @@ class Df1BaseClient:
         while self.is_clear_comm():
             pass  # just wait
 
+    def wait_no_pending_command(self):
+        # Check there is no pending command to avoid conflict with other previous commands
+        # make sure only one command is processing at a time
+        while self.is_pending_command():
+            pass
+
     def send_command(self, command):
+        # wait for any pending command to avoid conflict with other previous commands
+        # make sure only one command is processing at a time
+        self.wait_no_pending_command()
+
         # While clear any communication wth PLC hold any send command
         self.wait_while_com_clear()
 

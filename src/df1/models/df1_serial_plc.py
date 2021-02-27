@@ -81,6 +81,9 @@ class Df1SerialPlc(BasePlc):
     def clear_comm(self):
         self._clear_comm()
 
+    def is_pending_command(self):
+        return len(self.send_queue)>0
+
 
     def _wait_for_thread(self):  # pragma: nocover
         return self._ready.wait(THREAD_START_TIMEOUT)
@@ -92,7 +95,6 @@ class Df1SerialPlc(BasePlc):
             self._loop = False
             # self._loop_thread.join()
             self._loop_thread = None
-
 
 
     def send_bytes(self, buffer):
