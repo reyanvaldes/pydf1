@@ -118,6 +118,7 @@ class Df1TCPPlc(BasePlc):
             self._plc_socket.send(buffer)
         except Exception as e:
             print('[Error] Send runtime error',e)
+            self._connected = False  # set connected to false to force create a new connection
 
     def _receive_bytes(self):
         # in_sockets, out_sockets, error_socket = select.select([self._plc_socket], [], [], RECEIVE_TIMEOUT)
@@ -130,7 +131,7 @@ class Df1TCPPlc(BasePlc):
                 self._on_bytes_received(buffer)
 
         except socket.error as e:  # TODO: python 3 ConnectionResetError
-            pass
+            self._connected = False  # set connected to false to force create a new connection
 
     def _create_connected_socket(self):
         print('[INFO] Create new Socket to', self._address)
