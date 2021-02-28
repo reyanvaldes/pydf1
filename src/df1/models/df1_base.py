@@ -408,8 +408,9 @@ class Df1BaseClient:
                     time.sleep(self._seq_sleep_time)
 
             if not retry_send:
+                self._plc.clear_comm()  # try to recover from any communication problem
                 raise SendReceiveError()
-                # self._plc.clear_comm()  # try to recover from any communication problem
+
 
         raise SendReceiveError()
 

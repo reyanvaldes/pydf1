@@ -80,9 +80,9 @@ class Df1TCPPlc(BasePlc):
 
     def clear_buffer(self):
         try:
-            time.sleep(0.01)
+            time.sleep(0.03)
             while self._plc_socket.recv(RCV_BUFFER_SIZE):
-                time.sleep(0.01)
+                time.sleep(0.03)
         except Exception as e:
             pass
 
