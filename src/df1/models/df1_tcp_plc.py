@@ -131,7 +131,7 @@ class Df1TCPPlc(BasePlc):
                 self._on_bytes_received(buffer)
 
         except socket.error as e:  # TODO: python 3 ConnectionResetError
-            self._connected = False  # set connected to false to force create a new connection
+            pass
 
     def _create_connected_socket(self):
         print('[INFO] Create new Socket to', self._address)
