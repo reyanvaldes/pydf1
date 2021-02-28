@@ -110,6 +110,7 @@ class Df1BaseClient:
         # check the plc type supported, otherwise give a warning message
         self._clear_comm = False
         self._reconnect_count = 0
+        self._command_sent = None
 
     def __enter__(self):
         return self
@@ -379,6 +380,8 @@ class Df1BaseClient:
 
             self.comm_history.append({'direction': 'out', 'command': command})
 
+            self._command_sent = command  # record the command sent to compare with the tns of the message received
+
             self._plc.send_bytes(command.get_bytes())
 
             retry_send = False
@@ -429,9 +432,10 @@ class Df1BaseClient:
             self._plc.send_bytes(last_response_buffer)
         elif issubclass(type(message), BaseDataFrame):
             if message.is_valid():
-                self._send_ack()
-                with self._message_sink_lock:
-                    self._messages_sink.append(message)
+                self._send_ack()   # let know PLC we received the message and it is valid
+                if self._command_sent.tns == message.tns:  # Important to check the transaction #, otherwise drop it
+                    with self._message_sink_lock:
+                        self._messages_sink.append(message)
             else:
                 self._send_nak()
         else:
