@@ -197,8 +197,7 @@ class Df1BaseClient:
             for data in reply.get_data(FileType.INTEGER):
                 status = data >> bit.value & 1
                 values.append(status)
-        if len(values) == 1:
-            return values[0]
+
         return values
 
     # Read Bits I1:0-XX
@@ -214,8 +213,7 @@ class Df1BaseClient:
             for data in reply.get_data(FileType.INTEGER):
                 status = data >> bit.value & 1
                 values.append(status)
-        if len(values) == 1:
-            return values[0]
+
         return values
 
     # Read Binary B3:0/Bit
@@ -231,8 +229,7 @@ class Df1BaseClient:
             for data in reply.get_data(FileType.INTEGER):
                 status = data >> bit.value & 1
                 values.append(status)
-        if len(values) == 1:
-            return values[0]
+
         return values
 
     # Read Timers T4:XX.DN/.PRE/.ACC,.DN.EN,.DN
@@ -264,8 +261,7 @@ class Df1BaseClient:
                     status = status >> 1 & 1
 
                 values.append(status)
-        if len(values) == 1:
-            return values[0]
+
         return values
 
     # C5:xx.PRE => read_c (start, COUNTER.PRE, total of counters =1) -> list
@@ -303,8 +299,7 @@ class Df1BaseClient:
                     status = status & 1
 
                 values.append(status)
-        if len(values) == 1:
-            return values[0]
+
         return values
 
     # Read Integers R6:XX
@@ -313,8 +308,7 @@ class Df1BaseClient:
                                       file_type=FileType.CONTROL, start=start, start_sub=0x00)
         reply = self.send_command(command)
         values = reply.get_data(FileType.INTEGER)
-        if len(values) == 1:
-            return values[0]
+
         return values
 
     # Read Integers N7:XX
@@ -323,8 +317,7 @@ class Df1BaseClient:
                                       file_type=FileType.INTEGER, start=start, start_sub=0x00)
         reply = self.send_command(command)
         values = reply.get_data(FileType.INTEGER)
-        if len(values) == 1:
-            return values[0]
+
         return values
 
     # Read Integers F8:XX- TODO
@@ -333,8 +326,7 @@ class Df1BaseClient:
                                       file_type=FileType.FLOAT, start=start, start_sub=0x00)
         reply = self.send_command(command)
         values = reply.get_data(FileType.FLOAT)
-        if len(values) == 1:
-            return values[0]
+
         return values
 
     # Inspect a bit in a word
@@ -416,8 +408,8 @@ class Df1BaseClient:
                     time.sleep(self._seq_sleep_time)
 
             if not retry_send:
-                # raise SendReceiveError()
-                self._clear_comm()  # try to recover from any communication problem
+                raise SendReceiveError()
+                # self._plc.clear_comm()  # try to recover from any communication problem
 
         raise SendReceiveError()
 
