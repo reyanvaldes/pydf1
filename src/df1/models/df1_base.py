@@ -417,7 +417,7 @@ class Df1BaseClient:
 
             if not retry_send:
                 # raise SendReceiveError()
-                self.reconnect()  # try to recover from any communication problem
+                self._clear_comm()  # try to recover from any communication problem
 
         raise SendReceiveError()
 
