@@ -15,7 +15,6 @@ from collections import deque
 import random
 import threading
 import time
-import serial
 from enum import Enum
 import struct
 
