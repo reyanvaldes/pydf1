@@ -9,7 +9,7 @@
 
 # Repositories
 # Original: https://github.com/metalsartigan/pydf1
-# Adapted:
+# Adapted: https://github.com/reyanvaldes/pydf1
 
 from collections import deque
 import random
@@ -110,6 +110,7 @@ class Df1BaseClient:
         self._clear_comm = False
         self._reconnect_count = 0
         self._command_sent = None
+        self._message_dropped =0
 
     def __enter__(self):
         return self
@@ -138,6 +139,9 @@ class Df1BaseClient:
 
     def reconnect_total(self):
         return self._reconnect_count
+
+    def message_dropped_total(self):
+        return self._message_dropped
 
     def close(self):
         self._plc.close()
@@ -404,15 +408,22 @@ class Df1BaseClient:
                         self._send_enq()
                     break  # exit retry loop
                 elif got_ack:
-                    return reply
+                    # validate if this reply correspond to the command using transaction number (TNS),
+                    # otherwise drop it and keep trying
+                    if self._command_sent.tns == reply.tns:  # Important to check the transaction #, otherwise drop it
+                        return reply
+                    else:
+                        # drop this message and Starting all over again
+                        # This could happened or either bad response from PLC or something happened with the queue
+                        self._message_dropped += 1
+                        print(f'[ERROR]**** Message dropped- CMD TNS:{self._command_sent.tns} Reply TNS:{reply.tns} ')
+
                 i += 1
                 if self._seq_sleep_time>0:
                     time.sleep(self._seq_sleep_time)
 
             if not retry_send:
-                self._plc.clear_comm()  # try to recover from any communication problem
                 raise SendReceiveError()
-
 
         raise SendReceiveError()
 
@@ -432,7 +443,9 @@ class Df1BaseClient:
         elif issubclass(type(message), BaseDataFrame):
             if message.is_valid():
                 self._send_ack()   # let know PLC we received the message and it is valid
-                if self._command_sent.tns == message.tns:  # Important to check the transaction #, otherwise drop it
+                # validate if this reply correspond to the command using transaction number (TNS),
+                # otherwise drop it
+                if self._command_sent.tns == message.tns:
                     with self._message_sink_lock:
                         self._messages_sink.append(message)
             else:

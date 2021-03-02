@@ -68,7 +68,9 @@ class Df1SerialClient(Df1BaseClient):
                        timeout=self._timeout)
         if self._plc.is_opened():
             print(f'[INFO] Connect Status: OK')
+            return True
         else:
             print(f'[INFO] Connect Status: Failed')
+        return False
 
 

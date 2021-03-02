@@ -162,10 +162,10 @@ class Df1SerialPlc(BasePlc):
         self._clearing_comm = True
         self.clear_buffer()
 
-        time.sleep(1)
+        time.sleep(0.1)
         if self.is_opened():
             while self._read_bytes():  # read all bytes coming from PLC in case of response from previous command
-                time.sleep(1)
+                time.sleep(0.1)
             print('[WARN] Waiting for clear comm- done')
         else:
             print('[WARN] Abort clear comm- It is not connected to the PLC')

@@ -25,7 +25,7 @@ for __ in range(3):
         print('N7:3-5', client.read_integer(start=0, total_int=3))  # Read Integers
     except Exception as e:
         print('[WARN] Runtime error has happened',e)
-        client.reconnect()      
+    
 client.close()
 """
 
@@ -57,6 +57,8 @@ class Df1TCPClient (Df1BaseClient):
         self._plc.connect(address=self._ip_address, port=self._ip_port, timeout=self._timeout)
         if self._plc.is_connected():
             print(f'[INFO] Connect Status: OK')
+            return True
         else:
             print(f'[INFO] Connect Status: Failed')
+        return False
 

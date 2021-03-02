@@ -169,7 +169,7 @@ class Df1TCPPlc(BasePlc):
         while True:  # read all bytes coming from PLC in case of response from previous command
             try:
                 buffer = bytearray()
-                time.sleep(1)
+                time.sleep(0.1)
                 buffer = self._plc_socket.recv(RCV_BUFFER_SIZE)
                 # print ('buffer', buffer)
                 if len(buffer) == 0 or buffer is None:
