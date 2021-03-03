@@ -426,7 +426,6 @@ class Df1BaseClient:
                         self._message_dropped += 1
                         print(f'[ERROR]**** Message dropped- CMD TNS:{self._command_sent.tns} Reply TNS:{reply.tns} ')
                         # Need to start all over again
-                        got_ack = False
                         i =0
 
                 i += 1
