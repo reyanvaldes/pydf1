@@ -25,7 +25,7 @@ from df1.models.base_data_frame import BaseDataFrame
 from df1.models.exceptions import SendReceiveError
 from df1.models.receive_buffer import ReceiveBuffer
 from df1.models.tx_symbol import TxSymbol
-from df1.replies import ReplyAck, ReplyNak, ReplyEnq
+from df1.replies import ReplyAck, ReplyNak, ReplyEnq, Reply4f
 
 from df1.commands.commands import Command0FA2, Command0FAA  # Reading/Writing Command
 from df1.file_type import FileType
@@ -110,7 +110,7 @@ class Df1BaseClient:
         self._clear_comm = False
         self._reconnect_count = 0
         self._command_sent = None
-        self._message_dropped =0
+        self._messages_dropped =0
 
     def __enter__(self):
         return self
@@ -121,9 +121,15 @@ class Df1BaseClient:
 
     # Abstract Connect method, customized for each plc type: Serial, TCP
     def connect(self):
+        """
+        Abstract method, provide base for other classes that inherited from this
+        """
         pass
 
     def reconnect(self):
+        """
+        Close and open connection again after clear buffer
+        """
         try:
             self._reconnect_count += 1
             # clear any previous buffer left just in case to avoid interfere with other command
@@ -138,58 +144,120 @@ class Df1BaseClient:
             self._clear_comm = False
 
     def reconnect_total(self):
+        """
+        Get total times it did reconnect
+        """
         return self._reconnect_count
 
-    def message_dropped_total(self):
-        return self._message_dropped
+    def messages_dropped_total(self):
+        """
+        Get total messages dropped
+        """
+        return self._messages_dropped
 
     def close(self):
+        """
+        Close the connection to the PLC
+        """
         self._plc.close()
 
     def is_clear_comm(self):
+        """
+        Return if the client is clearing communication with PLC
+        """
         return self._plc.is_clearing_comm()
 
     def is_pending_command(self):
+        """
+        Return if there is any pending command in queue
+        """
         return self._plc.is_pending_command()
 
     # Write output bits as entire word, it doesn't write specific bit only but the entire word
     # Used for testing reading. Example of use: write_output (data=[0b0011])
-    def write_output(self, table=0, start=0, data=[]):
-        command1 = self.create_command(Command0FAA, table=table, data_to_write=data,
+    def write_output(self, file_table=0, start=0, data=[]):
+        """
+        Write data (words in list) to the output starting with 'start' offset
+
+        :param file_table: file table used for outputs, default =0
+        :param start: starting output address, default =0
+        :param data: list of words, each word (16 bits) will be written in outputs starting from start address
+        :return: True if success, otherwise return False or raise exception
+        """
+        command1 = self.create_command(Command0FAA, table=file_table, data_to_write=data,
                                        file_type=FileType.OUT_LOGIC, start=start, start_sub=0x00)
         reply = self.send_command(command1)
+        return type(reply) is Reply4f
 
-    # Write boolean bits as entire word, it doesn't write specific bit only but the entire word
+    # Write binary data as entire word, it doesn't write specific bit only but the entire word
     # Used for testing reading. Example of use: write_bits (data=[0b0011])
-    def write_binary(self, table=3, start=0, data=[]):
-        command1 = self.create_command(Command0FAA, table=table, data_to_write=data,
+    def write_binary(self, file_table=3, start=0, data=[]):
+        """
+        Write data (words in list) to the binary file starting with 'start' offset
+
+        :param file_table: file table used for binary, default =3
+        :param start: starting address, default =0
+        :param data: list of words, each word (16 bits) will be written in binary starting from start address
+        :return: True if success, otherwise return False or raise exception
+        """
+        command1 = self.create_command(Command0FAA, table=file_table, data_to_write=data,
                                        file_type=FileType.BIT, start=start, start_sub=0x00)
         reply = self.send_command(command1)
+        return type(reply) is Reply4f
 
     # Write registers as int
     # Used for testing reading. Example of use: write_register (data=[11])
 
-    def write_register(self, table=6, start=0, data=[]):
-        command1 = self.create_command(Command0FAA, table=table, data_to_write=data,
+    def write_register(self, file_table=6, start=0, data=[]):
+        """
+        Write data (words in list) to the registers file starting with 'start' offset
+
+        :param file_table: file table used for registers, default =6
+        :param start: starting address, default =0
+        :param data: list of words, each word (16 bits) will be written in registers starting from start address
+        :return: True if success, otherwise return False or raise exception
+        """
+        command1 = self.create_command(Command0FAA, table=file_table, data_to_write=data,
                                        file_type=FileType.CONTROL, start=start, start_sub=0x00)
         reply = self.send_command(command1)
+        return type(reply) is Reply4f
 
     # Write floating numbers
     # Used for testing reading. Example of use: write_register (data=[50.4, 100.5])
-    def write_float(self, table=8, start=0, data=[]):
+    def write_float(self, file_table=8, start=0, data=[]):
+        """
+        Write data (floats in list) to the floats file starting with 'start' offset
+
+        :param file_table: file table used for registers, default =8
+        :param start: starting address, default =0
+        :param data: list of floats, each float will be written in float file starting from start address
+        :return: True if success, otherwise return False or raise exception
+        """
+
         bytes_write = bytearray()
         for value in data:
             buffer = bytearray(struct.pack('<f', value)) # get package using little endian format
             bytes_write += buffer
 
-        command1 = self.create_command(Command0FAA, table=table, data_to_write=bytes_write,
+        command1 = self.create_command(Command0FAA, table=file_table, data_to_write=bytes_write,
                                        file_type=FileType.FLOAT, start=start, start_sub=0x00)
         reply = self.send_command(command1)
+        return type(reply) is Reply4f
 
     # Reading Functions
     # Read Outputs O1:0/Bit
     # Note: if read more words that plc is supported, will get null as response from PLC
     def read_output(self, file_table=0, start=0, bit=BIT.ALL, total_int=1) -> list():
+        """
+        Read data from output file table starting with 'start' offset
+
+        :param file_table: file table used for outputs, default =0
+        :param start: starting address, default =0
+        :param bit: define which specific bit or all bits want to read from words, e.g: BIT.BIT0, BIT.ALL
+        :param total_int: total of words (16 bits) to read
+        :return: list of words/status of bits if success or raise exception in case of error
+        """
+
         command = self.create_command(Command0FA2, bytes_to_read=total_int * 2, table=file_table,
                                       file_type=FileType.OUT_LOGIC, start=start, start_sub=0x00)
         reply = self.send_command(command)
@@ -206,6 +274,16 @@ class Df1BaseClient:
 
     # Read Bits I1:0-XX
     def read_input(self, file_table=1, start=0, bit=BIT.ALL, total_int=1) -> list():
+        """
+         Read data from input file table starting with 'start' offset
+
+         :param file_table: file table used for input, default =1
+         :param start: starting address, default =0
+         :param bit: define which specific bit or all bits want to read from words, e.g: BIT.BIT0, BIT.ALL
+         :param total_int: total of words (16 bits) to read
+         :return: list of words/status of bits if success or raise exception in case of error
+         """
+
         command = self.create_command(Command0FA2, bytes_to_read=total_int * 2, table=file_table,
                                       file_type=FileType.IN_LOGIC, start=start, start_sub=0x00)
         reply = self.send_command(command)
@@ -222,6 +300,16 @@ class Df1BaseClient:
 
     # Read Binary B3:0/Bit
     def read_binary(self, file_table=3, start=0, bit=BIT.ALL, total_int=1) -> list():
+        """
+         Read data from binary file table starting with 'start' offset
+
+         :param file_table: file table used for binary, default =3
+         :param start: starting address, default =0
+         :param bit: define which specific bit or all bits want to read from words, e.g: BIT.BIT0, BIT.ALL
+         :param total_int: total of words (16 bits) to read
+         :return: list of words/status of bits if success or raise exception in case of error
+         """
+
         command = self.create_command(Command0FA2, bytes_to_read=total_int * 2, table=file_table,
                                       file_type=FileType.BIT, start=start, start_sub=0x00)
         reply = self.send_command(command)
@@ -240,6 +328,16 @@ class Df1BaseClient:
     # Timer - Table 4- OK subs:0-STATUS ( .EN,.TI,.DN: data >> 12  ) ,1-PRE,2-ACTUAL,3-ACC
 
     def read_timer(self, file_table=4, start=0, category=TIMER.ACC, total_int=1) -> list():
+        """
+         Read data from timers file table starting with 'start' offset
+
+         :param file_table: file table used for timers, default =4
+         :param start: starting address, default =0
+         :param category: define category to get, e.g: TIMER.EN,.TI,.DN,.PRE,.ACC,.STATUS (entire word)
+         :param total_int: total of words (16 bits) to read
+         :return: list of words based on category if success or raise exception in case of error
+         """
+
         # Based on category determine the Sub
         sub = 0  # are bits .EN, TI, DN, or all of them in Status
         if category == TIMER.PRE:
@@ -272,6 +370,16 @@ class Df1BaseClient:
     # Counter - Table 5- OK subs: 0-STATUS ( (CU,CD,DN,OV,UN,UA) 111111 >> 10), 1- PRE, 2- ACC
 
     def read_counter(self, file_table=5, start=0, category=COUNTER.ACC, total_int=1) -> list():
+        """
+          Read data from counters file table starting with 'start' offset
+
+          :param file_table: file table used for counter, default =5
+          :param start: starting address, default =0
+          :param category: define category to get, e.g: COUNTER.CU,.CD,.DN,.OV,.UN,.UA,.PRE,.ACC,.STATUS (entire word)
+          :param total_int: total of words (16 bits) to read
+          :return: list of words based on category if success or raise exception in case of error
+          """
+
         # Based on category determine the Sub
         sub = 0  # are bits  (CU,CD,DN,OV,UN,UA) or all of them in Status
         if category == COUNTER.PRE:
@@ -307,7 +415,17 @@ class Df1BaseClient:
         return values
 
     # Read Integers R6:XX
+    # TODO Add categories when reading registers
     def read_register(self, file_table=6, start=0, total_int=1) -> list():
+        """
+         Read data from register file table starting with 'start' offset
+
+         :param file_table: file table used for register, default =6
+         :param start: starting address, default =0
+         :param total_int: total of words (16 bits) to read
+         :return: list of words if success or raise exception in case of error
+         """
+
         command = self.create_command(Command0FA2, bytes_to_read=total_int * 2, table=file_table,
                                       file_type=FileType.CONTROL, start=start, start_sub=0x00)
         reply = self.send_command(command)
@@ -317,6 +435,15 @@ class Df1BaseClient:
 
     # Read Integers N7:XX
     def read_integer(self, file_table=7, start=0, total_int=1) -> list():
+        """
+         Read data from integer file table starting with 'start' offset
+
+         :param file_table: file table used for integer, default =7
+         :param start: starting address, default =0
+         :param total_int: total of words (16 bits) to read
+         :return: list of words if success or raise exception in case of error
+         """
+
         command = self.create_command(Command0FA2, bytes_to_read=total_int * 2, table=file_table,
                                       file_type=FileType.INTEGER, start=start, start_sub=0x00)
         reply = self.send_command(command)
@@ -324,8 +451,17 @@ class Df1BaseClient:
 
         return values
 
-    # Read Integers F8:XX- TODO
+    # Read Integers F8:XX
     def read_float(self, file_table=8, start=0, total_float=1) -> list():
+        """
+         Read data from floats file table starting with 'start' offset
+
+         :param file_table: file table used for register, default =8
+         :param start: starting address, default =0
+         :param total_float: total of floats (32 bits) to read
+         :return: list of floats if success or raise exception in case of error
+         """
+
         command = self.create_command(Command0FA2, bytes_to_read=total_float * 4, table=file_table,
                                       file_type=FileType.FLOAT, start=start, start_sub=0x00)
         reply = self.send_command(command)
@@ -336,32 +472,43 @@ class Df1BaseClient:
     # Inspect a bit in a word
     # return 1 or 0
     def bit_inspect (self, value: int, bit: BIT):
+        """
+        Return the bit inspection based on BIT enum
+
+        :param value: word to inspect
+        :param bit: category of bit to inspect, e.g: BIT.BIT0,.BIT1,...,.BIT15,.ALL (for entire word)
+        :return: Return word or bit based on BIT enum selection
+        """
         if bit==bit.ALL:
             return value
         else:
             return (value >> bit.value) & 1
 
-    def _get_initial_tns(self):  # pragma: nocover
-        return random.randint(0, 0xffff)
-
-    def _get_new_tns(self):
-        self._last_tns += 1
-        if self._last_tns > 0xffff:
-            self._last_tns = 0x0
-        return self._last_tns
-
     def create_command(self, command_type, **kwargs):
+        """
+        Create command to be ready for sending
+
+        :param command_type: type of command, e.g: Command0FA2 for reading, Command0FAA for writing
+        :param kwargs: other parameters based on command
+        :return: Return command created. This has to be sent using send_command
+        """
         command = command_type()
         command.init_with_params(src=self._src, dst=self._dst, tns=self._get_new_tns(), **kwargs)
         return command
 
-    def clear_queue(self):
     # empty the messages queue to avoid conflict with other commands
+    def clear_queue(self):
+        """
+        Clear the messages queue to avoid conflict with other commands
+        """
         with self._message_sink_lock:
             while self._messages_sink:
                 self._messages_sink.pop(0)
 
     def wait_while_com_clear(self):
+        """
+        Try to get clear main parts involved in the communication
+        """
         # While clear any communication wth PLC hold any send command
         # This is kind of interlock when connect don't send any command until comm is clear
         while self.is_clear_comm():
@@ -372,12 +519,21 @@ class Df1BaseClient:
         self.clear_queue()
 
     def wait_no_pending_command(self):
+        """
+        Wait all commands in queue has been processed
+        """
         # Check there is no pending command to avoid conflict with other previous commands
         # make sure only one command is processing at a time
         while self.is_pending_command():
             pass
 
     def send_command(self, command):
+        """
+        Send the command, created by create_command
+
+        :param command: created by created_command
+        :return: list of values or raise exception in case of error
+        """
         """Doc page 4-6 Transmitter"""
         # print('Sending Command')
         for __ in range(3):  # 3
@@ -423,11 +579,11 @@ class Df1BaseClient:
                     else:
                         # This could happened or either bad response from PLC or something happened with the queue
                         # drop this message and Starting all over again
-                        self._message_dropped += 1
+                        self._messages_dropped += 1
                         print(f'[ERROR]**** Message dropped- CMD TNS:{self._command_sent.tns} Reply TNS:{reply.tns} ')
-                        # Need to start all over again
-                        retry_send = True
-                        break
+                        # try one more time
+                        got_ack = False
+                        i=0
 
                 i += 1
                 if self._seq_sleep_time>0:
@@ -438,6 +594,15 @@ class Df1BaseClient:
                 raise SendReceiveError()
 
         raise SendReceiveError()
+
+    def _get_initial_tns(self):  # pragma: nocover
+        return random.randint(0, 0xffff)
+
+    def _get_new_tns(self):
+        self._last_tns += 1
+        if self._last_tns > 0xffff:
+            self._last_tns = 0x0
+        return self._last_tns
 
     def _bytes_received(self, buffer):
         """Doc page 4-8"""
