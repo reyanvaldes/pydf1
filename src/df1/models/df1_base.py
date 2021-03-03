@@ -426,7 +426,8 @@ class Df1BaseClient:
                         self._message_dropped += 1
                         print(f'[ERROR]**** Message dropped- CMD TNS:{self._command_sent.tns} Reply TNS:{reply.tns} ')
                         # Need to start all over again
-                        i =0
+                        retry_send = True
+                        break
 
                 i += 1
                 if self._seq_sleep_time>0:
