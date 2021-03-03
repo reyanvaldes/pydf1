@@ -417,12 +417,16 @@ class Df1BaseClient:
                         # This could happened or either bad response from PLC or something happened with the queue
                         self._message_dropped += 1
                         print(f'[ERROR]**** Message dropped- CMD TNS:{self._command_sent.tns} Reply TNS:{reply.tns} ')
+                        # Need to start all over again
+                        got_ack = False
+                        i =0
 
                 i += 1
                 if self._seq_sleep_time>0:
                     time.sleep(self._seq_sleep_time)
 
             if not retry_send:
+                self._plc.clear_buffer() # try to clear any buffer for retrying
                 raise SendReceiveError()
 
         raise SendReceiveError()
