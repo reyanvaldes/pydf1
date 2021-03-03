@@ -355,6 +355,12 @@ class Df1BaseClient:
         command.init_with_params(src=self._src, dst=self._dst, tns=self._get_new_tns(), **kwargs)
         return command
 
+    def clear_queue(self):
+    # empty the messages queue to avoid conflict with other commands
+        with self._message_sink_lock:
+            while self._messages_sink:
+                self._messages_sink.pop(0)
+
     def wait_while_com_clear(self):
         # While clear any communication wth PLC hold any send command
         # This is kind of interlock when connect don't send any command until comm is clear
@@ -362,6 +368,8 @@ class Df1BaseClient:
             pass  # just wait
         # clear any previous buffer left just in case to avoid interfere with other command
         self._plc.clear_buffer()
+        # clear messages queue, just in case has pending messages
+        self.clear_queue()
 
     def wait_no_pending_command(self):
         # Check there is no pending command to avoid conflict with other previous commands
@@ -413,8 +421,8 @@ class Df1BaseClient:
                     if self._command_sent.tns == reply.tns:  # Important to check the transaction #, otherwise drop it
                         return reply
                     else:
-                        # drop this message and Starting all over again
                         # This could happened or either bad response from PLC or something happened with the queue
+                        # drop this message and Starting all over again
                         self._message_dropped += 1
                         print(f'[ERROR]**** Message dropped- CMD TNS:{self._command_sent.tns} Reply TNS:{reply.tns} ')
                         # Need to start all over again
@@ -465,9 +473,9 @@ class Df1BaseClient:
             with self._message_sink_lock:
                 if self._messages_sink:
                     return self._messages_sink.pop(0)
-                endTime = time.time()
-                if endTime - startTime > self._timeout_read_msg:
-                    break
+            endTime = time.time()
+            if endTime - startTime > self._timeout_read_msg:
+                break
             time.sleep(EXPECT_MSG_SLEEP_TIME)
         return ReplyTimeout()
 
