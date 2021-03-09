@@ -265,7 +265,7 @@ class Df1BaseClient:
 
         except Exception as e:
             print('[ERROR] Read output error',e)
-            return None  # return None
+            raise SendReceiveError()
 
         values = list()
         # Parsing based on the Category
@@ -298,7 +298,7 @@ class Df1BaseClient:
 
         except Exception as e:
             print('[ERROR] Read input error',e)
-            return None  # return None
+            raise SendReceiveError()
 
         # Parsing based on the Category
         values = list()
@@ -331,7 +331,7 @@ class Df1BaseClient:
             reply = self.send_command(command)
         except Exception as e:
             print('[ERROR] Read binary error',e)
-            return None  # return None
+            raise SendReceiveError()
 
         # Parsing based on the Category
         values = list()
@@ -370,7 +370,7 @@ class Df1BaseClient:
             reply = self.send_command(command)
         except Exception as e:
             print('[ERROR] Read timer error',e)
-            return None  # return None
+            raise SendReceiveError()
 
         # Parsing based on the Category
         values = list()
@@ -417,7 +417,7 @@ class Df1BaseClient:
             reply = self.send_command(command)
         except Exception as e:
             print('[ERROR] Read counter error',e)
-            return None  # return None
+            raise SendReceiveError()
 
         # Parsing based on the Category
         values = list()
@@ -462,7 +462,7 @@ class Df1BaseClient:
             reply = self.send_command(command)
         except Exception as e:
             print('[ERROR] Read register error',e)
-            return None  # return None
+            raise SendReceiveError()
 
         values = reply.get_data(FileType.INTEGER)
 
@@ -485,7 +485,7 @@ class Df1BaseClient:
             reply = self.send_command(command)
         except Exception as e:
             print('[ERROR] Read integer error',e)
-            return None  # return None
+            raise SendReceiveError()
 
         values = reply.get_data(FileType.INTEGER)
 
@@ -509,7 +509,7 @@ class Df1BaseClient:
 
         except Exception as e:
             print('[ERROR] Read float error',e)
-            return None  # return None
+            raise SendReceiveError()
 
         values = reply.get_data(FileType.FLOAT)
 
