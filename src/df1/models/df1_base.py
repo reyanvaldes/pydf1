@@ -260,9 +260,15 @@ class Df1BaseClient:
 
         command = self.create_command(Command0FA2, bytes_to_read=total_int * 2, table=file_table,
                                       file_type=FileType.OUT_LOGIC, start=start, start_sub=0x00)
-        reply = self.send_command(command)
-        # Parsing based on the Category
+        try:
+            reply = self.send_command(command)
+
+        except Exception as e:
+            print('[ERROR] Read output error',e)
+            return list()  # return null list
+
         values = list()
+        # Parsing based on the Category
         if bit == BIT.ALL:  # return all integers as shown
             values = reply.get_data(FileType.INTEGER)
         else:  # related individual bits
@@ -271,6 +277,7 @@ class Df1BaseClient:
                 values.append(status)
 
         return values
+
 
     # Read Bits I1:0-XX
     def read_input(self, file_table=1, start=0, bit=BIT.ALL, total_int=1) -> list():
@@ -286,7 +293,13 @@ class Df1BaseClient:
 
         command = self.create_command(Command0FA2, bytes_to_read=total_int * 2, table=file_table,
                                       file_type=FileType.IN_LOGIC, start=start, start_sub=0x00)
-        reply = self.send_command(command)
+        try:
+            reply = self.send_command(command)
+
+        except Exception as e:
+            print('[ERROR] Read input error',e)
+            return list()  # return null list
+
         # Parsing based on the Category
         values = list()
         if bit == BIT.ALL:  # return all integers as shown
@@ -297,6 +310,7 @@ class Df1BaseClient:
                 values.append(status)
 
         return values
+
 
     # Read Binary B3:0/Bit
     def read_binary(self, file_table=3, start=0, bit=BIT.ALL, total_int=1) -> list():
@@ -312,7 +326,13 @@ class Df1BaseClient:
 
         command = self.create_command(Command0FA2, bytes_to_read=total_int * 2, table=file_table,
                                       file_type=FileType.BIT, start=start, start_sub=0x00)
-        reply = self.send_command(command)
+
+        try:
+            reply = self.send_command(command)
+        except Exception as e:
+            print('[ERROR] Read binary error',e)
+            return list()  # return null list
+
         # Parsing based on the Category
         values = list()
         if bit == BIT.ALL:  # return all integers as shown
@@ -346,7 +366,12 @@ class Df1BaseClient:
             sub = 2
         command = self.create_command(Command0FA2, bytes_to_read=total_int * 2, table=file_table,
                                       file_type=FileType.TIMER, start=start, start_sub=sub)
-        reply = self.send_command(command)
+        try:
+            reply = self.send_command(command)
+        except Exception as e:
+            print('[ERROR] Read timer error',e)
+            return list()  # return null list
+
         # Parsing based on the Category
         values = list()
         if category in {TIMER.PRE, TIMER.ACC}:  # return all integers as shown
@@ -388,7 +413,12 @@ class Df1BaseClient:
             sub = 2
         command = self.create_command(Command0FA2, bytes_to_read=total_int * 2, table=file_table,
                                       file_type=FileType.COUNTER, start=start, start_sub=sub)
-        reply = self.send_command(command)
+        try:
+            reply = self.send_command(command)
+        except Exception as e:
+            print('[ERROR] Read counter error',e)
+            return list()  # return null list
+
         # Parsing based on the Category
         values = list()
         if category in {COUNTER.PRE, COUNTER.ACC}:  # return all integers as shown
@@ -428,7 +458,12 @@ class Df1BaseClient:
 
         command = self.create_command(Command0FA2, bytes_to_read=total_int * 2, table=file_table,
                                       file_type=FileType.CONTROL, start=start, start_sub=0x00)
-        reply = self.send_command(command)
+        try:
+            reply = self.send_command(command)
+        except Exception as e:
+            print('[ERROR] Read register error',e)
+            return list()  # return null list
+
         values = reply.get_data(FileType.INTEGER)
 
         return values
@@ -446,7 +481,12 @@ class Df1BaseClient:
 
         command = self.create_command(Command0FA2, bytes_to_read=total_int * 2, table=file_table,
                                       file_type=FileType.INTEGER, start=start, start_sub=0x00)
-        reply = self.send_command(command)
+        try:
+            reply = self.send_command(command)
+        except Exception as e:
+            print('[ERROR] Read integer error',e)
+            return list()  # return null list
+
         values = reply.get_data(FileType.INTEGER)
 
         return values
@@ -464,7 +504,13 @@ class Df1BaseClient:
 
         command = self.create_command(Command0FA2, bytes_to_read=total_float * 4, table=file_table,
                                       file_type=FileType.FLOAT, start=start, start_sub=0x00)
-        reply = self.send_command(command)
+        try:
+            reply = self.send_command(command)
+
+        except Exception as e:
+            print('[ERROR] Read float error',e)
+            return list()  # return null list
+
         values = reply.get_data(FileType.FLOAT)
 
         return values
