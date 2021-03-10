@@ -111,6 +111,7 @@ class Df1BaseClient:
         self._reconnect_count = 0
         self._command_sent = None
         self._messages_dropped =0
+        self.read_ok = False
 
     def __enter__(self):
         return self
@@ -257,7 +258,7 @@ class Df1BaseClient:
         :param total_int: total of words (16 bits) to read
         :return: list of words/status of bits if success or raise exception in case of error
         """
-
+        self.read_ok = False
         command = self.create_command(Command0FA2, bytes_to_read=total_int * 2, table=file_table,
                                       file_type=FileType.OUT_LOGIC, start=start, start_sub=0x00)
         try:
@@ -275,7 +276,7 @@ class Df1BaseClient:
             for data in reply.get_data(FileType.INTEGER):
                 status = data >> bit.value & 1
                 values.append(status)
-
+        self.read_ok = len(values) >0 and command.tns == reply.tns
         return values
 
 
@@ -290,7 +291,7 @@ class Df1BaseClient:
          :param total_int: total of words (16 bits) to read
          :return: list of words/status of bits if success or raise exception in case of error
          """
-
+        self.read_ok = False
         command = self.create_command(Command0FA2, bytes_to_read=total_int * 2, table=file_table,
                                       file_type=FileType.IN_LOGIC, start=start, start_sub=0x00)
         try:
@@ -308,7 +309,7 @@ class Df1BaseClient:
             for data in reply.get_data(FileType.INTEGER):
                 status = data >> bit.value & 1
                 values.append(status)
-
+        self.read_ok = len(values) > 0 and command.tns == reply.tns
         return values
 
 
@@ -323,7 +324,7 @@ class Df1BaseClient:
          :param total_int: total of words (16 bits) to read
          :return: list of words/status of bits if success or raise exception in case of error
          """
-
+        self.read_ok = False
         command = self.create_command(Command0FA2, bytes_to_read=total_int * 2, table=file_table,
                                       file_type=FileType.BIT, start=start, start_sub=0x00)
 
@@ -341,7 +342,7 @@ class Df1BaseClient:
             for data in reply.get_data(FileType.INTEGER):
                 status = data >> bit.value & 1
                 values.append(status)
-
+        self.read_ok = len(values) > 0 and command.tns == reply.tns
         return values
 
     # Read Timers T4:XX.DN/.PRE/.ACC,.DN.EN,.DN
@@ -357,7 +358,7 @@ class Df1BaseClient:
          :param total_int: total of words (16 bits) to read
          :return: list of words based on category if success or raise exception in case of error
          """
-
+        self.read_ok = False
         # Based on category determine the Sub
         sub = 0  # are bits .EN, TI, DN, or all of them in Status
         if category == TIMER.PRE:
@@ -388,7 +389,7 @@ class Df1BaseClient:
                     status = status >> 1 & 1
 
                 values.append(status)
-
+        self.read_ok = len(values) > 0 and command.tns == reply.tns
         return values
 
     # C5:xx.PRE => read_c (start, COUNTER.PRE, total of counters =1) -> list
@@ -404,7 +405,7 @@ class Df1BaseClient:
           :param total_int: total of words (16 bits) to read
           :return: list of words based on category if success or raise exception in case of error
           """
-
+        self.read_ok = False
         # Based on category determine the Sub
         sub = 0  # are bits  (CU,CD,DN,OV,UN,UA) or all of them in Status
         if category == COUNTER.PRE:
@@ -441,7 +442,7 @@ class Df1BaseClient:
                     status = status & 1
 
                 values.append(status)
-
+        self.read_ok = len(values) > 0 and command.tns == reply.tns
         return values
 
     # Read Integers R6:XX
@@ -455,7 +456,7 @@ class Df1BaseClient:
          :param total_int: total of words (16 bits) to read
          :return: list of words if success or raise exception in case of error
          """
-
+        self.read_ok = False
         command = self.create_command(Command0FA2, bytes_to_read=total_int * 2, table=file_table,
                                       file_type=FileType.CONTROL, start=start, start_sub=0x00)
         try:
@@ -465,7 +466,7 @@ class Df1BaseClient:
             raise SendReceiveError()
 
         values = reply.get_data(FileType.INTEGER)
-
+        self.read_ok = len(values) > 0 and command.tns == reply.tns
         return values
 
     # Read Integers N7:XX
@@ -478,7 +479,7 @@ class Df1BaseClient:
          :param total_int: total of words (16 bits) to read
          :return: list of words if success or raise exception in case of error
          """
-
+        self.read_ok = False
         command = self.create_command(Command0FA2, bytes_to_read=total_int * 2, table=file_table,
                                       file_type=FileType.INTEGER, start=start, start_sub=0x00)
         try:
@@ -488,7 +489,7 @@ class Df1BaseClient:
             raise SendReceiveError()
 
         values = reply.get_data(FileType.INTEGER)
-
+        self.read_ok = len(values) > 0 and command.tns == reply.tns
         return values
 
     # Read Integers F8:XX
@@ -501,7 +502,7 @@ class Df1BaseClient:
          :param total_float: total of floats (32 bits) to read
          :return: list of floats if success or raise exception in case of error
          """
-
+        self.read_ok = False
         command = self.create_command(Command0FA2, bytes_to_read=total_float * 4, table=file_table,
                                       file_type=FileType.FLOAT, start=start, start_sub=0x00)
         try:
@@ -512,7 +513,7 @@ class Df1BaseClient:
             raise SendReceiveError()
 
         values = reply.get_data(FileType.FLOAT)
-
+        self.read_ok = len(values) > 0 and command.tns == reply.tns
         return values
 
     # Inspect a bit in a word
