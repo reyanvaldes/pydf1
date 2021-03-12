@@ -162,6 +162,13 @@ class Df1BaseClient:
         """
         self._plc.close()
 
+    def disconnect(self):
+        """
+        Disconnect, same as closing the connection to the PLC
+        """
+        self.close()
+
+
     def is_clear_comm(self):
         """
         Return if the client is clearing communication with PLC
