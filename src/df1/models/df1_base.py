@@ -264,7 +264,7 @@ class Df1BaseClient:
         :param start: starting address, default =0
         :param bit: define which specific bit or all bits want to read from words, e.g: BIT.BIT0, BIT.ALL
         :param total_int: total of words (16 bits) to read
-        :return: true if success, otherwise false
+        :return: list of values if success, otherwise return [] or raise exception
         ;        .data => list of words/status of bits if success or raise exception in case of error
         """
         self.read_ok = False
@@ -291,7 +291,7 @@ class Df1BaseClient:
             self.data = values
         else:
             self.data =[]
-        return self.read_ok
+        return self.data
 
 
     # Read Bits I1:0-XX
@@ -303,7 +303,7 @@ class Df1BaseClient:
          :param start: starting address, default =0
          :param bit: define which specific bit or all bits want to read from words, e.g: BIT.BIT0, BIT.ALL
          :param total_int: total of words (16 bits) to read
-         :return: true if success, otherwise false
+         :return: list of values if success, otherwise return [] or raise exception
         ;        .data => list of words/status of bits if success or raise exception in case of error
          """
         self.read_ok = False
@@ -329,7 +329,7 @@ class Df1BaseClient:
             self.data = values
         else:
             self.data =[]
-        return self.read_ok
+        return self.data
 
 
     # Read Binary B3:0/Bit
@@ -367,7 +367,7 @@ class Df1BaseClient:
             self.data = values
         else:
             self.data = []
-        return self.read_ok
+        return self.data
 
     # Read Timers T4:XX.DN/.PRE/.ACC,.DN.EN,.DN
     # Timer - Table 4- OK subs:0-STATUS ( .EN,.TI,.DN: data >> 12  ) ,1-PRE,2-ACTUAL,3-ACC
@@ -380,7 +380,7 @@ class Df1BaseClient:
          :param start: starting address, default =0
          :param category: define category to get, e.g: TIMER.EN,.TI,.DN,.PRE,.ACC,.STATUS (entire word)
          :param total_int: total of words (16 bits) to read
-         :return: true if success, otherwise false
+         :return: list of values if success, otherwise return [] or raise exception
         ;        .data => list of words/status of bits if success or raise exception in case of error
          """
         self.read_ok = False
@@ -419,7 +419,7 @@ class Df1BaseClient:
             self.data = values
         else:
             self.data =[]
-        return self.read_ok
+        return self.data
 
     # C5:xx.PRE => read_c (start, COUNTER.PRE, total of counters =1) -> list
     # Counter - Table 5- OK subs: 0-STATUS ( (CU,CD,DN,OV,UN,UA) 111111 >> 10), 1- PRE, 2- ACC
@@ -432,7 +432,7 @@ class Df1BaseClient:
           :param start: starting address, default =0
           :param category: define category to get, e.g: COUNTER.CU,.CD,.DN,.OV,.UN,.UA,.PRE,.ACC,.STATUS (entire word)
           :param total_int: total of words (16 bits) to read
-          :return: true if success, otherwise false
+          :return: list of values if success, otherwise return [] or raise exception
         ;        .data => list of words/status of bits if success or raise exception in case of error
           """
         self.read_ok = False
@@ -477,7 +477,7 @@ class Df1BaseClient:
             self.data = values
         else:
             self.data =[]
-        return self.read_ok
+        return self.data
 
     # Read Integers R6:XX
     # TODO Add categories when reading registers
@@ -488,7 +488,7 @@ class Df1BaseClient:
          :param file_table: file table used for register, default =6
          :param start: starting address, default =0
          :param total_int: total of words (16 bits) to read
-         :return: true if success, otherwise false
+         :return: list of values if success, otherwise return [] or raise exception
         ;        .data => list of words/status of bits if success or raise exception in case of error
          """
         self.read_ok = False
@@ -506,7 +506,7 @@ class Df1BaseClient:
             self.data = values
         else:
             self.data =[]
-        return self.read_ok
+        return self.data
 
     # Read Integers N7:XX
     def read_integer(self, file_table=7, start=0, total_int=1) -> list():
@@ -516,7 +516,7 @@ class Df1BaseClient:
          :param file_table: file table used for integer, default =7
          :param start: starting address, default =0
          :param total_int: total of words (16 bits) to read
-         :return: true if success, otherwise false
+        :return: list of values if success, otherwise return [] or raise exception
         ;        .data => list of words/status of bits if success or raise exception in case of error
          """
         self.read_ok = False
@@ -534,7 +534,7 @@ class Df1BaseClient:
             self.data = values
         else:
             self.data =[]
-        return self.read_ok
+        return self.data
 
     # Read Integers F8:XX
     def read_float(self, file_table=8, start=0, total_float=1) -> list():
@@ -544,7 +544,7 @@ class Df1BaseClient:
          :param file_table: file table used for register, default =8
          :param start: starting address, default =0
          :param total_float: total of floats (32 bits) to read
-         :return: true if success, otherwise false
+         :return: list of values if success, otherwise return [] or raise exception
         ;        .data => list of words/status of bits if success or raise exception in case of error
          """
         self.read_ok = False
@@ -563,7 +563,7 @@ class Df1BaseClient:
             self.data = values
         else:
             self.data =[]
-        return self.read_ok
+        return self.data
 
     # Inspect a bit in a word
     # return 1 or 0
