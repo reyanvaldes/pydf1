@@ -73,4 +73,7 @@ class Df1SerialClient(Df1BaseClient):
             print(f'[INFO] Connect Status: Failed')
         return False
 
+    def is_connected(self):
+        return self._plc.is_opened()
+
 

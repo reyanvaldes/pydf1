@@ -62,3 +62,6 @@ class Df1TCPClient (Df1BaseClient):
             print(f'[INFO] Connect Status: Failed')
         return False
 
+
+    def is_connected(self):
+        return self._plc.is_connected()

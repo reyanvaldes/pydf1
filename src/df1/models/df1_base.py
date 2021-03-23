@@ -128,6 +128,14 @@ class Df1BaseClient:
         """
         pass
 
+        # Abstract is_connected method, customized for each plc type: Serial, TCP
+
+    def is_connected(self):
+        """
+        Abstract method, provide base for other classes that inherited from this
+        """
+        pass
+
     def reconnect(self):
         """
         Close and open connection again after clear buffer
