@@ -39,7 +39,9 @@ SEND_SEQ_SLEEP_TIME = 0.0
 # The Ethernet -Serial adapter has to be configured as following:
 # TCP: Work Mode= TCP Server, IP, Port, UART packet Time =40 ms, UART packet length =0
 # RS232: Baud rate, Data size, Parity, Stop bits, Flow Control = None that match PLC
-
+# Note:
+# As gateway you can use any Serial to TCP Server converter, e.g: like USR-TCP232-302, 5 VDC, ($30 from Amazon)
+# this will allow long distance communication
 
 class Df1TCPClient (Df1BaseClient):
     def __init__(self, ip_address='127.0.0.1', ip_port=44818,
