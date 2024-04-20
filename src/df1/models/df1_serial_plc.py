@@ -22,8 +22,8 @@ from df1.models.exceptions import SendQueueOverflowError, ThreadError
 import serial
 
 BUFFER_SIZE = 4096
-WRITE_TIMEOUT = 0.00001
-INTERCHAR_TIMEOUT = 0.00001
+WRITE_TIMEOUT = 1.0  # changed from 0.00001
+INTERCHAR_TIMEOUT = 0.5 # changed from 0.00001
 THREAD_START_TIMEOUT = 1
 SEND_QUEUE_SIZE = 100
 
@@ -47,7 +47,8 @@ class Df1SerialPlc(BasePlc):
 
 
     def open(self,port='COM3', baudrate=19200, parity=serial.PARITY_NONE,
-                stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS, timeout=3):
+                stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS, timeout=3, write_timeout=WRITE_TIMEOUT,
+                interCharTimeout=INTERCHAR_TIMEOUT):
         # print('Opening')
         self.port = port
         self.baudrate = baudrate
@@ -58,7 +59,7 @@ class Df1SerialPlc(BasePlc):
         self._clearing_comm = False
         self._plc = serial.Serial(port=port,baudrate=baudrate,
                                   parity=parity,stopbits=stopbits, bytesize=bytesize,
-                                  timeout=self.timeout,write_timeout=WRITE_TIMEOUT, interCharTimeout=INTERCHAR_TIMEOUT)
+                                  timeout=self.timeout,write_timeout=write_timeout, interCharTimeout=interCharTimeout)
         self._clear_comm()
         self._connected = self.is_opened()
         self._loop = True

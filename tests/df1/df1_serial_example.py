@@ -14,15 +14,15 @@ from df1.models.df1_serial_client import Df1SerialClient
 from df1.models.df1_base import TIMER, COUNTER, BIT
 
 client = Df1SerialClient(plc_type='MicroLogix 1000', src=0x0, dst=0x1,
-                         port='COM3',
-                         baudrate=19200, parity=serial.PARITY_NONE,
+                         port='COM6',
+                         baudrate=9600, parity=serial.PARITY_NONE,
                          stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS,
                          timeout=3)
 client.connect()
 
 output =0
 
-for i in range(100000000):
+for i in range(3):
     print('Running',i+1)
     start_time = time.time()
 
@@ -37,15 +37,15 @@ for i in range(100000000):
 
     # Reading operations OK
     try:
-        print('N7:3-5',    client.read_integer(start=0, total_int=6))  # Read Integers OK
-        print('N7:0-2', client.read_integer(start=0, total_int=3))  # Read Integers OK
-        print('Timer4:1',  client.read_timer(start=1, category=TIMER.ACC))  # Read Timer OK
-        print('Counter5:0',client.read_counter(start=0, category=COUNTER.PRE)) # Read Counter OK
-        print('R6:0', client.read_register(start=0, total_int=4))  # Read Registers- CONTROL OK
-        print('B3:0', client.read_binary(start=0))  # Read Binary bits words OK
-        out0 = client.read_output(start=0, bit=BIT.ALL, total_int=1)
-        print('O0:0/1', out0)# , 'bit', client.bit_inspect(out0, BIT.BIT3))  # Read Outputs OK and Bits inspect
-        print('I1:0', client.read_input(start=0, bit=BIT.BIT1, total_int=2))  # Read Inputs
+        print('N7:3-5',    client.read_integer(start=90, total_int=8))  # Read Integers OK
+        # print('N7:0-2', client.read_integer(start=0, total_int=3))  # Read Integers OK
+        # print('Timer4:1',  client.read_timer(start=1, category=TIMER.ACC))  # Read Timer OK
+        # print('Counter5:0',client.read_counter(start=0, category=COUNTER.PRE)) # Read Counter OK
+        # print('R6:0', client.read_register(start=0, total_int=4))  # Read Registers- CONTROL OK
+        # print('B3:0', client.read_binary(start=0))  # Read Binary bits words OK
+        # out0 = client.read_output(start=0, bit=BIT.ALL, total_int=1)
+        # print('O0:0/1', out0)# , 'bit', client.bit_inspect(out0, BIT.BIT3))  # Read Outputs OK and Bits inspect
+        # print('I1:0', client.read_input(start=0, bit=BIT.BIT1, total_int=2))  # Read Inputs
         # # Testing
         # print('Float8:0',client.read_float(start=0, total_float=2))  # Read Float
     except Exception as e:
